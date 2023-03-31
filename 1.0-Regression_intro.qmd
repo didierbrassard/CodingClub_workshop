@@ -1,0 +1,53 @@
+---
+title: "Regression workshop: introduction"
+date: today
+format: html
+toc: true
+---
+
+# What is 'regression'?
+
+*"Everything is regression"*
+
+$$Y=mx+b$$
+
+Used for descriptive research, prediction and causal inference.
+
+## Examples
+
+- Correlations
+- Prediction equation for energy expenditure
+  - Harris-Benedict equation
+  - Institute of Medicine equations
+- Bioelectrical impedance 
+
+# Common notation for regression
+
+- $Y$ dependent variable (i.e. outcome)
+- $X$ independent variable
+- $Z$ sometimes used to refer to covariates
+- $\beta$ regression coefficient (beta)
+- $i$ individuals or observations
+- $E$ expected value
+  - $E(X)$ expected value of $X$
+  - $E(Y|X)$ expected value of $Y$ given or conditional on $X$
+  - $E(Y|X=0)$ expected value of $Y$ given or conditional on $X$ having a value of $0$
+  - $E(Y|X, Z)$ expected value of $Y$ given or conditional on $X$ **and** $Z$
+
+  
+- $\epsilon$ errors or residuals
+- $i.i.d.$ independent and identically distributed
+- $\sigma^2$ variance
+- $N$ normality or normal distribution
+  
+## Linear regression model equation
+
+The expected value of $Y$ given $X$, $E(Y|X)$, is:
+
+$$Y_i=\beta_0+\beta_XX_i+\epsilon_i$$ 
+
+$$\text{with } \epsilon \sim N(0,\sigma_{\epsilon}^{2}) \text{ , i.i.d.}$$
+
+which reads as: the expected value of outcome $Y$ for $i$^th^ individual equals to a constant $\beta_0$ (model intercept) plus the value of $X$ for the $i$^th^ individual multiplied by the regression coefficient $\beta_X$ and with errors $\epsilon$.
+
+
