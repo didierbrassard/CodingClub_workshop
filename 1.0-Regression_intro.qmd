@@ -1,7 +1,7 @@
 ---
 title: "Regression workshop: introduction"
 date: "`r Sys.Date()`"
-output: html
+format: gfm
 toc: true
 knitr:
   opts_chunk: 
