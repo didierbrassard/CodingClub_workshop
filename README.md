@@ -1,2 +1,2 @@
-# CodingClub_workshop
- McGill coding club workshops
+# McGill Coding Club workshops
+
