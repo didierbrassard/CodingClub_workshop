@@ -2,15 +2,19 @@
 title: "Regression workshop: introduction"
 date: "`r Sys.Date()`"
 format: gfm
+dpi: 300
 toc: true
 knitr:
   opts_chunk: 
     echo: false
     message: false
     warning: false
+bibliography: references.bib
 ---
 
 *Disclaimer: the goal of this workshop is to provide an introduction and working knowledge of regression models with interest for nutrition-related analyses. It is not intended to comprehensively cover all aspects.*
+
+\newpage
 
 # What is 'regression'?
 
@@ -18,14 +22,15 @@ $$Y=mx+b$$
 
 Statistical models used for descriptive research, prediction and causal inference.
 
-## Examples of regression in nutrition
+## Examples of regression model in nutrition research
 
 -   Prediction equation for energy expenditure
     -   Harris-Benedict equation
     -   Institute of Medicine equations
--   Bioelectrical impedance equations
--   Canadian Nutrition Screening Tool
--   Estimating the effect of an intervention
+-   Prediction equation to estimate sodium intake based on urinary excretion [@Brown2013]
+-   Bioelectrical impedance equations [@Bosy2013]
+-   Canadian Nutrition Screening Tool [@Laporte2014]
+-   Estimating the effect of an intervention or dietary exposure
 
 Regression models sometimes have specific names depending on the particular setting and field. For example, T-tests, ANOVA, ANCOVA are [all regression models!](https://drmowinckels.io/blog/2020-06-24-the-linear-regression-family-in-r/)
 
@@ -52,21 +57,24 @@ Regression models sometimes have specific names depending on the particular sett
 
 -   **Simple vs. multiple**: a model with only a single independent variable $X$ is typically termed as a simple regression model, while a model with two or more independent variables $X_1, X_2, ...,X_j$ is termed a multiple regression model.
 
--   **Multivariable vs. multivariate**: these terms refer to two different types regression model. Multivari**able** is the most common model, where many independent variables $X_1, X_2, ...,X_j$ are considered. Multivar**iate** refers to a model where many dependent variables $Y_1, Y_2, ..., Y_k$ are considered. For examples, a multivariate model is necessary for a study design with repeated outcome measurements on the same study participants.
+-   **Multivariable vs. multivariate**: these terms refer to two different types regression model [@Hidalgo2013]. Multivari**able** is the most common model, where many independent variables $X_1, X_2, ...,X_j$ are considered. Multivar**iate** refers to a model where many dependent variables $Y_1, Y_2, ..., Y_k$ are considered. For example, a multivariate model is necessary for a study design with repeated outcome measurements on the same study participants. 
 
 -   **Regression coefficient, beta coefficient or** $\beta$: refer to the strength of the relationship between the independent and dependent variables. The regression coefficient typically indicates the expected change in outcome $Y$ for **1-unit** increase in $X$.
 
 # Regression model equations
 
-Regression models have a 'generic' format of $Y_i=\beta_1 X_{i1}+\beta_2 X_{i2}+...\beta_j X_{ij}$. Depending on the specific scientific objective, a choice of **distribution family** must be made. For a given regression equation, the model's outcome is assumed to follow a particular theoretical distribution. Choosing the proper distribution family is important, since it will ensure that the model properly fits the data.
+Regression models have a 'generic' format of $f(Y_i)=\beta_1 X_{i1}+\beta_2 X_{i2}+...\beta_j X_{ij}$.
+These generic models are termed **generalized linear models**. Depending on the specific scientific objective and data, a choice of **distribution family** must be made. For a given regression equation and distribution family, the model's outcome is assumed to follow a particular theoretical distribution. Choosing the proper distribution family is important, since it will ensure that the model properly fits the data. $f(Y_i)$ indicates that the outcome of interest can be transformed; this specific transformation is called a **link** function.
 
-For example, to properly model a continuous outcome $Y$, we might opt for the normal/Gaussian distribution family. Indeed, when lacking prior information about the particular shape of the $Y$ outcome, the normal/Gaussian is a common default choice. The corresponding regression model is a linear regression model, typically used for continuous outcomes. Note, however, that there are other relevant distribution family that might better fit a given continuous outcome (e.g., binominal, gamma, poisson), especially when we have prior knowledge about the shape of a given outcome's distribution.
+For example, to properly model a continuous outcome $Y$, we might opt for the normal/Gaussian distribution family with an identity link function (i.e., no transformation - the outcome data is used as it is). Indeed, when lacking prior information about the particular shape of the $Y$ outcome, the normal/Gaussian is a common default choice [@McElreath]. The corresponding regression model is a linear regression model for the outcome $Y$. Note, however, that there are other relevant distribution family that might better fit a given continuous outcome (e.g., binominal, gamma, poisson), especially when we have prior knowledge about the shape of a given outcome's distribution [@McElreath].
 
 Another example of a common type of outcome is a binary $Y$ (yes/no or event/no event). To model such outcome, we might opt for a binomal distribution family with a logit link function (i.e., a transformation of $Y$). The corresponding regression model is a logistic regression model, typically used for binary outcomes.
 
+\newpage
+
 ## Simple linear regression
 
-The expected value of binary $Y$ given $X$, $E(Y_i|X_i)$, is:
+The expected value of a continuous $Y$ given $X$, $E(Y_i|X_i)$, is:
 
 $$Y_i=\beta_0+\beta_XX_i+\epsilon_i$$
 
@@ -78,13 +86,15 @@ This type of model is also called an *ordinary least squares* regression model.
 
 ## Multiple linear regression
 
-The expected value of $Y$ given $X$, $E(Y_i|X_i,Z_i)$, is:
+The expected value of a continuous $Y$ given $X$ and covariates $Z$, $E(Y_i|X_i,Z_i)$, is:
 
 $$Y_i=\beta_0+\beta_XX_i+\gamma Z_i+\epsilon_i$$
 
 $$\text{with } \epsilon \sim N(\mu=0,\sigma_{\epsilon}^{2}) \text{ , i.i.d.}$$
 
-Note: $Z_i$ in the equation above could be a vector of covariates (i.e., more than one additional independent variable). $\gamma$ represents a vector of regression coefficients. $Z$ is used instead of $X$ to explicitely differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex).
+Note: $Z_i$ in the equation above could be a vector of covariates (i.e., more than one additional independent variable). $\gamma$ represents a vector of regression coefficients. $Z$ is used instead of $X$ to explicitely differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex). Plus, multiple linear regression is an example of multivariable model, since multiple independent variables are considered in the same model.
+
+Finally, the regression coefficient $\beta_X$ indicates the change in $Y$ on the original scale for a 1-unit increase in $X$. Indeed, the the oucome is untransformed (link = "identity").
 
 ## Simple logistic regression
 
@@ -96,15 +106,19 @@ $$\text{with logit}(\pi)=log(\frac{\pi}{1-\pi})$$
 
 which reads as: the expected value of the binary outcome $Y$ (denoted as $\pi$) equals to a constant $\beta_0$ (model intercept) plus the value of $X$ for the $i$^th^ individual multiplied by the regression coefficient $\beta_X$ **on the natural logarithm scale**.
 
-Of note, statistical softwares automatically transform data as long as the distribution family (i.e., binomial) and link (i.e., logit) are specified and the outcome $Y$ is indeed a binary outcome.
+Note: statistical softwares automatically transform data as long as the distribution family (i.e., binomial) and link (i.e., logit) are specified and the outcome $Y$ is indeed a binary outcome.
 
 Since the outcome is log-transformed with the "logit" link function, the regression coefficient $\beta_X$ indicates the change in $\text{logit}(\pi)$ on the log-scale for a 1-unit increase in $X$. Typically, the value of the coefficient on the log scale is harder to interpret and the coefficient is exponentiated $e^{\beta_x}$. $e^{\beta_x}$ then equals to the **odds ratio**, which indicates the (multiplicative) change of the odds of outcome for a 1-unit increase in $X$. Statistical software often provides convenient options to automatically calculate odds ratios.
+
+
 
 # Assumptions
 
 ["All models are wrong, but some are useful"](https://en.wikipedia.org/wiki/All_models_are_wrong)
 
-Even under best conditions, models never perfectly fit data and will always be some approximation of complex phenomenon. However, care should be taken to ensure that the statistical modelling is truthful to the data generation process (i.e., how the data was created). One step to ensure that the model is a good fit is to verify if the models' assumptions are adequately satisfied.
+Even under best conditions, models never perfectly fit data and will always be some approximation of complex phenomenon. For this reason, care should be taken to ensure that the statistical modelling is truthful to the data generating process (i.e., how the data was created) before and after fitting the model.
+
+Before fitting the model, the appropriate model for a given research question and data must be selected. After fitting the model, the models' assumptions should be verfiied to ensure they are *sufficiently* satisfied. This verification process is somewhat subjective. When in doubt, statistical methods should be applied to relax assumptions and make the model more robust.
 
 ## Linear regression
 
@@ -131,9 +145,9 @@ tibble::tribble(
   "Normality", "Model errors/residuals follow a normal/Gaussian distribution", "Quantile quantile-plot of residuals", 
     "Transformation of dependent variable (e.g., log) or using a different distribution family",
   "Homoscedasticity", "Variance of errors is constant across values of X", "Plot of residuals * predicted values",
-    "Transformation of dependent variable (e.g., log) or using a different distribution family",
+    "Transformation of dependent variable (e.g., log), using a different distribution family or bootstrap variance estimation",
   "Linearity", "The relationship between X and Y is linear", "Plot of X * Y", 
-    "Transformation of independent variables (e.g., restricted cubic spline)"
+    "Transformation of (continuous) independent variables (e.g., restricted cubic spline)"
 ) |>
   knitr::kable()
 
@@ -166,7 +180,7 @@ set.seed(1)
   ## Reference model - ideal scenario
   Y  <-  rnorm(n=sample_size, EQ, sd=0.5)
   ## Normality assumption not satisfied
-  Y_skewed <- rcauchy(n=sample_size, EQ)
+  Y_skewed <- rcauchy(n=sample_size, EQ,scale=0.1)
   ## Homoscedasticity assumption  not satisfied
   Y_hetero <- rnorm(n=sample_size, EQ, sd=X**2)
   ## Linearity assumption not satisfied
@@ -248,8 +262,6 @@ output_all$scenario_f <-
 
 @fig-normal shows assessment of the normality assumption.
 
-Note that a common misconception is that the raw data, either $X$ or $Y$, should be normally distributed. The linear regression model's normality assumption is **not** for a particular variable, but **for the residual/errors** of the model. Thus, it is neither relevant nor required to assess normality of the raw data prior to modelling.
-
 ```{r fig-normal}
 #| label: fig-normal
 #| fig-cap: "Normality assumption in linear regression model"
@@ -271,6 +283,15 @@ output_all |>
 
 ```
 
+**Common normality misconception**: note that a common misconception is that the raw data, either $X$ or $Y$, should be normally distributed. The linear regression model's normality assumption is **not** for a particular variable, but **for the residual/errors** of the model [@Lumley2002]. Thus, it is neither relevant nor required to assess normality of the raw data prior to modelling.
+
+TLDR:
+
+- **Incorrect**: "Raw data were not normal (P=0.01; Shapiro–Wilk test) and data were transformed before being entered into the linear regression model";
+- **Correct**: "Quantile-Quantile plots were used to confirm that the linear regression models' residuals were normally distributed. A log-transformation was applied for the outcome $Y$, since residuals strongly deviated from normality (Supplemental Figure)."
+
+\newpage
+
 @fig-variance show assessment of the homoscedasticity assumption.
 
 ```{r fig-variance}
@@ -291,6 +312,8 @@ output_all |>
 
 
 ```
+
+\newpage
 
 @fig-lin shows assessment of the linearity assumption.
 
@@ -314,6 +337,17 @@ output_all |>
 
 ```
 
+**Categorization is an inefficient method:** it might be tempting to categorize a continuous outcome to account for potential non-linearity. For example, traditional nutritional epidemiology articles often present estimates according to thirds (categorized by tertile), quarters (categorized by quartile), fifths (categorized by quintile). Another typical example is when two groups are compared after they have been dichotomized at the median value of a continuous variable [@Altman2006].
+The categorization of continuous variables is very inefficient as it reduces power by deleting information [@Altman2006; @Bennette2012; @Harrell2015]. Given the availability of flexible modelling strategy (e.g., restricted cubic spline), categorization is inadvisable [@Bennette2012].
+
+TLDR:
+
+- **Incorrect**: "Preliminary analyses revealed a non-linear relationship. The independent variable was categorized in four groups (quartiles) to satisfy assumption of the linear model.";
+- **Correct**: "To account for potential non-linearity, a restricted cubic spline transformation with 4 knots (quantiles 0.05, 0.275, 0.50, 0.725 and 0.95) was applied to continuous variables."
+
+
+\newpage
+
 ## Logistic regression
 
 For a logistic regression model, we assume that:
@@ -321,17 +355,42 @@ For a logistic regression model, we assume that:
 1.  the observations are independent. In other words, any individuals or observations are not related;
 2.  the outcome has a linear relationship with each independent variable **on the log scale**.
 
-Similar to linear regression, the independence assumption is usually verified by knowing about the study design. The linearity assumption can be verified by plotting logit of $Y$ according to independent variable(s) on the log scale.
+Similar to linear regression, the independence assumption is usually verified by knowing about the study design. The linearity assumption can be verified by plotting the logit of $Y$ according to independent variable(s) on the log scale.
+
+@tbl-log-assumption presents a summary of the model assumptions, verifications and solutions.
+
+```{r tbl-log-assumption}
+#| label: tbl-log-assumption
+#| tbl-cap: Assumptions of logistic regression model
+
+tibble::tribble(
+  ~Assumption, ~Description, ~Verifications, ~Solution,
+  "Independence", "Observations or individuals should be independent", "Study design", 
+    "Use a hierarchical, mixed or random effects model instead of traditional model",
+  "Linearity", "The relationship between X and logit(Y) is linear", "Plot of X * logit(Y)", 
+    "Transformation of (continuous) independent variables (e.g., restricted cubic spline)"
+) |>
+  knitr::kable()
+
+
+```
+
 
 ## Relaxing assumptions
 
-It is relevant to note that there are several statistical methods to relax the assumptions above.
+There are several statistical methods to relax the assumptions described above.
 
-For example, when dealing with multiple outcome measurements among the same individuals, mixed models (also called hierarchical or random-effects model) can be used to consider the correlation structure among repeated measurements. Such models relax the **independence** assumption.
+1. When dealing with multiple outcome measurements among the same individuals, mixed models (also called hierarchical or random-effects model) can be used to consider the correlation structure among repeated measurements. Such models relax the **independence** assumption.
 
-We can relax the **normality** assumption of errors. There are other distribution family that can be used for the distribution of residuals (e.g., binominal, gamma, poisson). These distribution families allow to model different types of outcome, including skewed distributions, count data, binary outcome, etc.
+2. We can relax the **normality** assumption of errors. There are other distribution family that can be used for the distribution of residuals (e.g., binominal, gamma, poisson). These distribution families allow to model different types of outcome, including skewed distributions, count data, binary outcome, etc. Transformations can also be applied to the outcome variable, e.g., the log transformation.
 
-When errors are not identically distributed across values of $X$ (i.e., heteroscedasticity), transformations of outcome variable may be sufficient. The log transformation is common and relax the **homoscedasticity** assumption.
+3. When errors are not identically distributed across values of $X$ (i.e., heteroscedasticity), transformations of outcome variable may be sufficient. The [log transformation](https://didierbrassard.github.io/posts/2023/04/blog-post-3/) is common and relax the **homoscedasticity** assumption. In addition, if heteroscedasticity is a major concern and transformations are not an option, [a bootstrap approach](https://didierbrassard.github.io/posts/2022/10/blog-post-4/) for variance estimation could be used.
 
-Finally, simple statistical transformation (e.g., restricted cubic spline) can be used for continuous independent variables. These transformations allow to consider potential non-linearity and, accordingly, relax the **linearity** assumption.
+4. Simple statistical transformation (e.g., [restricted cubic spline](https://didierbrassard.github.io/posts/2023/02/blog-post-1/)) can be used for continuous independent variables [@Harrell2015]. These transformations allow to consider potential non-linearity and, accordingly, relax the **linearity** assumption.
 
+Finally, minor departure from ideal scenarios are often not a cause for major concerns, e.g., see @Lumley2002 for a discussion around the normality assumption.
+
+# References
+
+::: {#refs}
+:::
