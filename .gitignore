@@ -53,3 +53,8 @@ rsconnect/
 *.html
 1.0-Regression_intro_files/*
 
+# codebook stuff
+figure/*
+data/metadata/Codebook-maker.html
+data/metadata/Codebook-maker.Rmd
+
