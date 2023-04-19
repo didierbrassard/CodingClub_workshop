@@ -51,4 +51,5 @@ rsconnect/
 # custom
 .DS_Store
 *.html
+1.0-Regression_intro_files/*
 
