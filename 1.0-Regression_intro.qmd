@@ -9,7 +9,7 @@ knitr:
     echo: false
     message: false
     warning: false
-bibliography: references.bib
+bibliography: misc/references.bib
 ---
 
 *Disclaimer: the goal of this workshop is to provide an introduction and working knowledge of regression models with interest for nutrition-related analyses. It is not intended to comprehensively cover all aspects.*
