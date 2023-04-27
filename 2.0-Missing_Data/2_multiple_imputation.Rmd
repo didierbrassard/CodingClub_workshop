@@ -2,7 +2,7 @@
 title: "R Notebook"
 author: "Hannah Han"
 output:
-  html_document:
+  github_document:
     df_print: paged
 ---
 
