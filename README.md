@@ -23,4 +23,4 @@ is a random sample of the population of Canadian adults.
   analysis](https://didierbrassard.github.io/CodingClub_workshop/1.0-Regression_intro.html)
 - [Part 1. Marginal effects: getting insights from a
   model](https://didierbrassard.github.io/CodingClub_workshop/1.1-Marginal_effects.html#/title-slide)
-- Part 2. Multiple imputation to deal with missingness: [slides](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/MIssing_Data_slides.pptx) | [code](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/2_multiple_imputation.html)
+- Part 2. Multiple imputation to deal with missingness: [slides](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/MIssing_Data_slides.pptx) | [code](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/2_multiple_imputation.md)
