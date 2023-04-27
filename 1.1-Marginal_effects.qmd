@@ -46,7 +46,7 @@ Regression models summarize data, but the standard output of a regression analys
 
 ::: {.fragment}
 
-**Model**: $\text{HorsePower}_i=\beta_0+\beta_X\text{Cylinder}_i+\epsilon_i$
+**Model (estimator)** $\text{HorsePower}_i=\beta_0+\beta_X\text{Cylinder}_i+\epsilon_i$
 
 ```{r }
 #| eval: FALSE
@@ -85,7 +85,7 @@ knitr::include_graphics(here::here("misc","meme-frodo.JPG"))
 ::: columns
 ::: {.column width="60%"}
 `proc glm` output from SAS.\
-**Model**: $\text{Systolic}_i=\beta_0+\beta_X\text{Age}_i+\epsilon_i$
+**Model (estimator)**: $\text{Systolic}_i=\beta_0+\beta_X\text{Age}_i+\epsilon_i$
 
 ```{r eval=FALSE}
 proc glm data = sashelp.heart;
@@ -116,10 +116,10 @@ knitr::include_graphics(here::here("misc","SAS_glm.png"))
 
 ## Issue
 
-For the most simple models, the marginal effect is the same as the regression coefficient
+For simple models, the marginal effect is straightforward.
 
 -   The marginal effect in $Y=\beta_0+\beta_XX+\epsilon$ is...
--   $\beta_X$ 
+-   $\beta_X$ !
 
 ::: fragment
 For more complex models, marginal effects are harder to obtain
@@ -143,15 +143,29 @@ Equivalent SAS options:
 
 # Example data
 
-## Demonstration data
+## Demonstration data {.smaller}
+
+::: columns
+::: {.column width="70%"}
 
 Data from the Canadian Community Health Survey (CCHS) 2015 - Nutrition is used.
 
 -   Survey design and sampling weights are not considered
 -   Assume the sample is just any random sample of the population
 -   Proper survey analysis is described elsewhere [and on my blog (shameless promotion)](https://didierbrassard.github.io/posts/2022/10/blog-post-5/)
+:::
+::: {.column width="30%"}
+```{r img-xls, echo=FALSE}
+#| fig-align: "center"
 
-## Load demonstration data
+knitr::include_graphics(here::here("misc","img-xls.png"))
+
+```
+
+:::
+:::
+
+## Load demonstration data {.smaller}
 
 ```{r load}
 
@@ -168,17 +182,16 @@ final <-
 # preview
 head(final,3)
 
-
 ```
 
 # Application
 
-## Example 1: E(energy \| age, sex, phys. act.) {.smaller}
+## Example 1: E(energy \| age, sex, physical activity) {.smaller}
 
 For descriptive purpose, we wish to estimate self-reported energy intakes according to age (years), sex and moderate/vigorous physical activity (hours/week).
 
 ::: fragment
-**Model:** $\text{Energy}_i=\beta_0 + \beta_1\text{age} + \beta_2\text{female} + \beta_3\text{phys. act.} + \epsilon_i$
+**Model (estimator)** $\text{Energy}_i=\beta_0 + \beta_1\text{age} + \beta_2\text{female} + \beta_3\text{phys. act.} +\epsilon_i$
 
 ```{r lm1}
 # Preferable to "factorize" before modelling 
@@ -201,7 +214,7 @@ SAS equivalent:
 
 proc genmod data=final ;
 class sex;
-model energy = age sex phys_act_mod  / dist=normal link=identity ;
+model energy = age sex phys_act_mod / dist=normal link=identity ;
 run
 
 ```
@@ -252,7 +265,7 @@ Linear regression models have 4 key assumptions.
 4.  Linearity: *to verify*.
 :::
 
-## Model assumptions: example
+## Model assumptions: example {.smaller}
 
 To calculate model errors (residuals): `residuals(lm1)`
 
@@ -394,7 +407,7 @@ knitr::include_graphics(here::here("misc","SAS_plm.png"))
 
 ## Model visualization at mean values {.smaller}
 
-Alternative visualization: mean of **all** covariates, including categorical ones coded as dummy covariates.
+Alternative to representative values: use mean of **all** covariates, including categorical ones (coded as dummy covariates).
 
 ```{r lm2-dummy}
 # generate dummy-coded variable for sex
@@ -408,9 +421,9 @@ lm2b <-
 
 ```
 
+-   Age: `mean(final$age)`= `r round(mean(final$age),2)`
 -   Sex: `mean(final$female)` = `r round(mean(final$female,na.rm=TRUE),1)`
-
--   Physical act.: `mean(final$phys_act_mod,na.rm=TRUE)`= `r round(mean(final$phys_act_mod,na.rm=TRUE),2)`
+-   Physical act.: `mean(final$phys_act_mod)` = `r round(mean(final$phys_act_mod,na.rm=TRUE),2)`
 
 ## Model visualization at mean values {.smaller}
 
@@ -438,7 +451,7 @@ lm2b <-
 
 ```
 
-## Custom hypothesis at user-defined values
+## Custom hypothesis at user-defined values {.smaller}
 
 Use `marginaleffects::avg_comparisons`
 
@@ -453,9 +466,7 @@ marginaleffects::avg_comparisons(lm2,
 
 ```
 
-[More examples available online](https://vincentarelbundock.github.io/marginaleffects/articles/comparisons.html)
-
-## Custom hypothesis for common change
+## Custom hypothesis for common change {.smaller}
 
 E(energy|age**=75^th^**, Z) - E(energy|**age=25^th^**, Z)
 
@@ -466,5 +477,8 @@ marginaleffects::avg_comparisons(lm2,
                                  variables = list(age = "iqr"))
 
 ```
+
+
+:::
 
 ## References
