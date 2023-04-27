@@ -1,0 +1,470 @@
+---
+title: "Marginal effects: getting insights from a model"
+author: "Didier Brassard"
+format:
+    revealjs:
+      theme: simple
+      # animation
+      transition: fade
+      # slide number
+      slide-number: true
+      show-slide-number: all
+      footer: "SHN Coding Club"
+  # revealjs:
+  #   css: misc/custom.css
+code-fold: show
+knitr:
+  opts_chunk: 
+    echo: TRUE
+    message: false
+    warning: false
+code-line-numbers: true
+bibliography: misc/references.bib
+---
+
+```{r set-up, echo=FALSE}
+
+# suppress scientific notation
+options(scipen = 9999)
+
+```
+
+# Introduction
+
+## Learning objective
+
+Using R and/or SAS:
+
+1.    Understand limitation of typical regression output;
+2.    Learn how to estimate marginal effects for categorical/continuous variables;
+3.    Learn how to visualize regression models;
+4.    Learn how to estimate custom hypotheses.
+
+## Standard regression output
+
+Regression models summarize data, but the standard output of a regression analysis is not automatically informative.
+
+::: {.fragment}
+
+**Model**: $\text{HorsePower}_i=\beta_0+\beta_X\text{Cylinder}_i+\epsilon_i$
+
+```{r }
+#| eval: FALSE
+
+glm(data = mtcars, formula = hp ~ cyl)
+
+```
+
+:::
+
+## Standard regression output
+
+::: columns
+::: {.column width="60%"}
+```{r }
+#| echo: FALSE
+
+glm(data = mtcars, formula = hp ~ cyl)
+
+```
+:::
+
+::: {.column width="40%"}
+```{r meme1}
+#| fig-align: "center"
+#| echo: FALSE
+
+knitr::include_graphics(here::here("misc","meme-frodo.JPG"))
+
+```
+:::
+:::
+
+## Standard regression output
+
+::: columns
+::: {.column width="60%"}
+`proc glm` output from SAS.\
+**Model**: $\text{Systolic}_i=\beta_0+\beta_X\text{Age}_i+\epsilon_i$
+
+```{r eval=FALSE}
+proc glm data = sashelp.heart;
+model Systolic = AgeAtStart ;
+run;
+```
+
+:::
+
+::: {.column width="40%"}
+```{r sas-glm, echo=FALSE}
+#| fig-align: "center"
+
+knitr::include_graphics(here::here("misc","SAS_glm.png"))
+
+```
+:::
+:::
+
+## Definition
+
+**Marginal effects** can help interpreting regression models [@Norton2019].
+
+-   Informally, a marginal effect is describing the change in outcome $Y$ given $X$, but according to population average of the other covariates.
+-   In other words, making your model (more) interpretable
+-   Note that the terminology is extremely confusing
+    -   [Marginalia: A guide to figuring out what the heck marginal effects](https://www.andrewheiss.com/blog/2022/05/20/marginalia/)
+
+## Issue
+
+For the most simple models, the marginal effect is the same as the regression coefficient
+
+-   The marginal effect in $Y=\beta_0+\beta_XX+\epsilon$ is...
+-   $\beta_X$ 
+
+::: fragment
+For more complex models, marginal effects are harder to obtain
+
+-   $\text{logit}(Y)=\beta_0+\beta_X\text{rcs}_X+\beta_{X_2}*\beta_{X_3}+\gamma Z$
+:::
+
+## Package to derive marginal effects
+
+R packages were developed to facilitate marginal effect estimation
+
+-   `marginaleffects`
+-   `emmeans` (includes the older `lsmeans`)
+
+::: fragment
+Equivalent SAS options:
+
+-   `ESTIMATE`
+-   `LSMEANS`
+:::
+
+# Example data
+
+## Demonstration data
+
+Data from the Canadian Community Health Survey (CCHS) 2015 - Nutrition is used.
+
+-   Survey design and sampling weights are not considered
+-   Assume the sample is just any random sample of the population
+-   Proper survey analysis is described elsewhere [and on my blog (shameless promotion)](https://didierbrassard.github.io/posts/2022/10/blog-post-5/)
+
+## Load demonstration data
+
+```{r load}
+
+# Loading
+load(file = here::here("data","processed","cchs2015_demonstration.rdata")) 
+
+# Select only some variables
+final <- 
+  cchs2015_demonstration |>
+  dplyr::select(participantid, r24_weekend, age, sex, education,
+                smoking, phys_act_mod, self_reported_bp,
+                energy, sodium, fibers)
+
+# preview
+head(final,3)
+
+
+```
+
+# Application
+
+## Example 1: E(energy \| age, sex, phys. act.) {.smaller}
+
+For descriptive purpose, we wish to estimate self-reported energy intakes according to age (years), sex and moderate/vigorous physical activity (hours/week).
+
+::: fragment
+**Model:** $\text{Energy}_i=\beta_0 + \beta_1\text{age} + \beta_2\text{female} + \beta_3\text{phys. act.} + \epsilon_i$
+
+```{r lm1}
+# Preferable to "factorize" before modelling 
+final$sex <-
+  factor(final$sex,
+          levels = c("Male","Female"),
+          labels = c("Male","Female"))
+
+# actual model 
+lm1 <- 
+  glm(energy ~ age + sex + phys_act_mod,
+    family  = gaussian(link="identity"),
+    data    = final)
+
+```
+
+SAS equivalent:
+
+```{r eval=FALSE}
+
+proc genmod data=final ;
+class sex;
+model energy = age sex phys_act_mod  / dist=normal link=identity ;
+run
+
+```
+
+:::
+
+## Model summary
+
+What can we say based on this output?
+
+```{r task-1-summary, echo=FALSE}
+
+lm1
+
+```
+
+
+## Exploring parameters: overview
+
+Helpful package to assess coefficients and generate standard output:
+
+-   `broom::tidy(model)`
+-   `parameters::parameters(model)`
+-   `gtsummary::tbl_regression()`
+
+::: {.fragment}
+SAS equivalent: `ods output <...>;` (see procedure documentation or use `ods trace on;`)
+:::
+
+## Exploring parameters: example
+
+```{r}
+
+gtsummary::tbl_regression(lm1)
+
+```
+
+
+## Model assumptions: overview
+
+Linear regression models have 4 key assumptions.
+
+1.  Independence;
+
+::: {.fragment .fade-in}
+2.  Homoscedasticity: *to verify*;
+3.  Normality: *to verify*;
+4.  Linearity: *to verify*.
+:::
+
+## Model assumptions: example
+
+To calculate model errors (residuals): `residuals(lm1)`
+
+```{r hist-res}
+#| fig-align: "center"
+
+qqnorm(residuals(lm1), main= "Quantile-quantile plot of residuals")
+qqline(residuals(lm1))
+
+```
+
+What can we say about this graph?
+
+## Model fine-tuning
+
+1.  Independence: assumed by design;
+2.  Homoscedasticity: **log transformation of energy**
+3.  Normality: **log transformation of energy**
+4.  Linearity: **restricted cubic spline transformation**
+
+Of note, log transformation not shown here for simplicity.
+
+## Revised model
+
+Specify **R**estricted **C**ubic **S**pline (RCS) transformation with `rms` package.
+
+`rms::rcs(variable,knots)`
+
+```{r lm2}
+#| code-line-numbers: "3"
+# revised model
+lm2 <- 
+  glm(energy ~ rms::rcs(age,4) + sex + rms::rcs(phys_act_mod,3),
+    family  = gaussian(link="identity") ,
+    data    = final)
+
+```
+
+
+## Exploring parameters: example
+
+```{r }
+
+gtsummary::tbl_regression(lm2)
+
+```
+
+... How can we interpret this revised model?
+
+```{r alternative, include=FALSE, eval=FALSE}
+
+# Generate model parameters
+parameters::parameters(lm2) |>
+  # convert object to data
+  tibble::as_tibble() |>
+  # selection only parameters and 95CI
+  dplyr::select(Parameter,Coefficient,CI_low,CI_high) |>
+  # Use gt package to print table and round numbers
+  gt::gt() |>
+  gt::fmt_number(columns = c(Coefficient,Coefficient,CI_low,CI_high), decimals=1)
+
+```
+
+
+## Marginal effects: categorical covariate/group means
+
+Marginal Means/Least-square means: [*"Predictions of a model, averaged across a 'reference grid' of categorical predictors."*](https://vincentarelbundock.github.io/marginaleffects/)
+
+```{r lsmeans-1}
+
+emmeans::lsmeans(lm2, "sex") 
+
+```
+
+## Marginal effects: categorical covariate/group mean
+
+More flexible analysis with `marginaleffects`
+
+```{r lsmeans-2}
+
+marginaleffects::marginal_means(model = lm2, variables = "sex")
+
+```
+
+## Marginal effects: categorical covariate/group mean
+
+Least-Square Means: [*LS-means are predicted population margins—that is, they estimate the marginal means over a balanced population.*](https://documentation.sas.com/doc/en/statcdc/14.2/statug/statug_genmod_syntax20.htm)
+
+SAS equivalent: `LSMEANS sex ;`
+
+## Marginal effects: categorical covariate/group mean difference
+
+```{r lsmeans-diff}
+#| code-line-numbers: "2"
+marginaleffects::marginal_means(model = lm2, variables = "sex",
+                                hypothesis = "pairwise")
+
+```
+
+::: fragment
+SAS equivalent: `LSMEANS sex / diff=all cl ;`
+:::
+
+## Model visualization at representative values {.smaller}
+
+Plot specific parameters with `marginaleffects::plot_predictions`
+
+```{r lm2-representative}
+#| fig-align: "center"
+
+  marginaleffects::plot_predictions(model = lm2,
+                                    condition =c("age"),
+                                    draw=TRUE)+
+  ggplot2::labs(title="E(energy | age, Z)",
+                subtitle = "Curve at representative values") +
+  ggplot2::theme_bw() 
+
+```
+
+## Model visualization at representative values (SAS) {.smaller}
+
+SAS equivalent: `proc plm ...;`
+
+```{r eval=FALSE}
+
+	proc plm restore=lm2  ;
+		effectplot fit(x= age ) / clm at(sex="Female");
+	run;
+
+```
+
+```{r sas-plm, echo=FALSE}
+#| fig-align: "center"
+
+knitr::include_graphics(here::here("misc","SAS_plm.png"))
+
+```
+
+
+## Model visualization at mean values {.smaller}
+
+Alternative visualization: mean of **all** covariates, including categorical ones coded as dummy covariates.
+
+```{r lm2-dummy}
+# generate dummy-coded variable for sex
+final$female <- ifelse(final$sex=="Female",1,0)
+
+# revised model
+lm2b <-
+  glm(energy ~ rms::rcs(age,4) + female + rms::rcs(phys_act_mod,3),
+    family  = gaussian(link="identity") ,
+    data    = final)
+
+```
+
+-   Sex: `mean(final$female)` = `r round(mean(final$female,na.rm=TRUE),1)`
+
+-   Physical act.: `mean(final$phys_act_mod,na.rm=TRUE)`= `r round(mean(final$phys_act_mod,na.rm=TRUE),2)`
+
+## Model visualization at mean values {.smaller}
+
+```{r lm2-mean}
+#| fig-align: "center"
+
+  marginaleffects::plot_predictions(model = lm2b,
+                                    condition =c("age"),
+                                    draw=TRUE) +
+  ggplot2::labs(title="E(energy | age, Z)",
+                subtitle = "Curve at mean values") +
+  ggplot2::theme_bw() 
+```
+
+## Model visualization for more than 1 covariate
+
+```{r lm2-categorical}
+#| fig-align: "center"
+#| code-line-numbers: "2"
+  marginaleffects::plot_predictions(model = lm2,
+                                    condition =c("age","sex"),
+                                    draw=TRUE) + 
+  ggplot2::labs(title="E(energy | age, sex, Z)") +
+  ggplot2::theme_bw()
+
+```
+
+## Custom hypothesis at user-defined values
+
+Use `marginaleffects::avg_comparisons`
+
+E(energy|age**=60**, Z) - E(energy|**age=30**, Z)
+
+```{r }
+#| code-line-numbers: "3"
+# <avg_comparisons> to calculate estimated Y given X and average Z
+marginaleffects::avg_comparisons(lm2,
+                                 variables = list(age = c(30,60))
+                                 ) 
+
+```
+
+[More examples available online](https://vincentarelbundock.github.io/marginaleffects/articles/comparisons.html)
+
+## Custom hypothesis for common change
+
+E(energy|age**=75^th^**, Z) - E(energy|**age=25^th^**, Z)
+
+```{r}
+#| code-line-numbers: "3"
+# <avg_comparisons> to calculate estimated Y given X and average Z
+marginaleffects::avg_comparisons(lm2,
+                                 variables = list(age = "iqr"))
+
+```
+
+## References
