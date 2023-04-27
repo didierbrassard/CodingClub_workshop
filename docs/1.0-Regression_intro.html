@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-04-26">
+<meta name="dcterms.date" content="2023-04-27">
 
 <title>Regression workshop: introduction</title>
 <style>
@@ -109,6 +109,7 @@ div.csl-indent {
   <li><a href="#simple-linear-regression" id="toc-simple-linear-regression" class="nav-link" data-scroll-target="#simple-linear-regression">Simple linear regression</a></li>
   <li><a href="#multiple-linear-regression" id="toc-multiple-linear-regression" class="nav-link" data-scroll-target="#multiple-linear-regression">Multiple linear regression</a></li>
   <li><a href="#simple-logistic-regression" id="toc-simple-logistic-regression" class="nav-link" data-scroll-target="#simple-logistic-regression">Simple logistic regression</a></li>
+  <li><a href="#multiple-logistic-regression" id="toc-multiple-logistic-regression" class="nav-link" data-scroll-target="#multiple-logistic-regression">Multiple logistic regression</a></li>
   </ul></li>
   <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions">Assumptions</a>
   <ul class="collapse">
@@ -139,7 +140,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 26, 2023</p>
+      <p class="date">April 27, 2023</p>
     </div>
   </div>
   
@@ -188,6 +189,12 @@ div.csl-indent {
 <li><span class="math inline">\(E(Y|X=0)\)</span> expected value of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span> having a value of <span class="math inline">\(0\)</span></li>
 <li><span class="math inline">\(E(Y|X, Z)\)</span> expected value of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span> <strong>and</strong> <span class="math inline">\(Z\)</span></li>
 </ul></li>
+<li><span class="math inline">\(Pr\)</span> or <span class="math inline">\(P\)</span> probability of outcome (same as expected value, but for binary outcomes)
+<ul>
+<li><span class="math inline">\(Pr(Y)\)</span> probability of <span class="math inline">\(Y\)</span></li>
+<li><span class="math inline">\(Pr(Y|X)\)</span> probability of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span></li>
+<li><span class="math inline">\(Pr(Y|X=0)\)</span> probability of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span> having a value of <span class="math inline">\(0\)</span></li>
+</ul></li>
 <li><span class="math inline">\(\epsilon\)</span> errors or residuals</li>
 <li><span class="math inline">\(i.i.d.\)</span> independent and identically distributed</li>
 <li><span class="math inline">\(\sigma^2\)</span> variance</li>
@@ -197,9 +204,15 @@ div.csl-indent {
 <section id="language" class="level2">
 <h2 class="anchored" data-anchor-id="language">Language</h2>
 <ul>
+<li><p><strong>Regression coefficient, beta coefficient or</strong> <span class="math inline">\(\beta\)</span>: refer to the strength of the relationship between the independent and dependent variables. The regression coefficient typically indicates the expected change in outcome <span class="math inline">\(Y\)</span> for <strong>1-unit</strong> increase in <span class="math inline">\(X\)</span>.</p></li>
 <li><p><strong>Simple vs.&nbsp;multiple</strong>: a model with only a single independent variable <span class="math inline">\(X\)</span> is typically termed as a simple regression model, while a model with two or more independent variables <span class="math inline">\(X_1, X_2, ...,X_j\)</span> is termed a multiple regression model.</p></li>
 <li><p><strong>Multivariable vs.&nbsp;multivariate</strong>: these terms refer to two different types regression model <span class="citation" data-cites="Hidalgo2013">(<a href="#ref-Hidalgo2013" role="doc-biblioref">Hidalgo and Goodman 2013</a>)</span>. Multivari<strong>able</strong> is the most common model, where many independent variables <span class="math inline">\(X_1, X_2, ...,X_j\)</span> are considered. Multivar<strong>iate</strong> refers to a model where many dependent variables <span class="math inline">\(Y_1, Y_2, ..., Y_k\)</span> are considered. For example, a multivariate model is necessary for a study design with repeated outcome measurements on the same study participants.</p></li>
-<li><p><strong>Regression coefficient, beta coefficient or</strong> <span class="math inline">\(\beta\)</span>: refer to the strength of the relationship between the independent and dependent variables. The regression coefficient typically indicates the expected change in outcome <span class="math inline">\(Y\)</span> for <strong>1-unit</strong> increase in <span class="math inline">\(X\)</span>.</p></li>
+<li><p><strong>Estimand, estimator and estimate</strong>: the estimand is the “definition of precisely what the [study] demands to find out” <span class="citation" data-cites="Cro2022">(<a href="#ref-Cro2022" role="doc-biblioref">Cro 2022</a>)</span>, the estimator is the statistical analysis and the estimate is the numerical result of the statistical analysis. A helpful metaphor is to think of the estimand as the intended recipe, the estimator as the preparation, and the estimate as the meal obtained in the end. More precisely:</p>
+<ul>
+<li><strong>Estimand</strong>: <span class="math inline">\(E(Y|X=1) - E(Y|X=0)\)</span> could be the difference in outcome when <span class="math inline">\(X=1\)</span> vs., instead, when <span class="math inline">\(X=0\)</span></li>
+<li><strong>Estimator</strong>: <span class="math inline">\(Y_i=\beta_0+\beta_XX_i+\epsilon_i\)</span> could be the simple linear regression model used for the analysis. In this example, <span class="math inline">\(X\)</span> could be an indicator of whether a given individual was randomized to intervention (<span class="math inline">\(X=1\)</span>) or control (<span class="math inline">\(X=0\)</span>).</li>
+<li><strong>Estimate</strong>: <span class="math inline">\(\beta_X=+3.0 \text{ units}\)</span> could be the estimate of this analysis, i.e., the numerical quantity estimated by the estimator.</li>
+</ul></li>
 </ul>
 </section>
 </section>
@@ -211,7 +224,7 @@ div.csl-indent {
 <div style="page-break-after: always;"></div>
 <section id="simple-linear-regression" class="level2">
 <h2 class="anchored" data-anchor-id="simple-linear-regression">Simple linear regression</h2>
-<p>The expected value of a continuous <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span>, <span class="math inline">\(E(Y_i|X_i)\)</span>, is:</p>
+<p>The expected value of a continuous <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span>, <span class="math inline">\(E(Y|X)\)</span>, is:</p>
 <p><span class="math display">\[Y_i=\beta_0+\beta_XX_i+\epsilon_i\]</span></p>
 <p><span class="math display">\[\text{with } \epsilon \sim N(\mu=0,\sigma_{\epsilon}^{2}) \text{ , i.i.d.}\]</span></p>
 <p>which reads as: the expected value of continuous outcome <span class="math inline">\(Y\)</span> for <span class="math inline">\(i\)</span><sup>th</sup> individual equals to a constant <span class="math inline">\(\beta_0\)</span> (model intercept) plus the value of <span class="math inline">\(X\)</span> for the <span class="math inline">\(i\)</span><sup>th</sup> individual multiplied by the regression coefficient <span class="math inline">\(\beta_X\)</span> and with errors <span class="math inline">\(\epsilon\)</span>. The model errors <span class="math inline">\(\epsilon\)</span> are assumed to follow a normal distribution with a mean of 0 and constant variance (<span class="math inline">\(\sigma_{\epsilon}^{2}\)</span>). Furthermore, errors are assumed to be independent and identically distributed (i.i.d).</p>
@@ -219,20 +232,27 @@ div.csl-indent {
 </section>
 <section id="multiple-linear-regression" class="level2">
 <h2 class="anchored" data-anchor-id="multiple-linear-regression">Multiple linear regression</h2>
-<p>The expected value of a continuous <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> and covariates <span class="math inline">\(Z\)</span>, <span class="math inline">\(E(Y_i|X_i,Z_i)\)</span>, is:</p>
+<p>The expected value of a continuous <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> and covariates <span class="math inline">\(Z\)</span>, <span class="math inline">\(E(Y|X,Z)\)</span>, is:</p>
 <p><span class="math display">\[Y_i=\beta_0+\beta_XX_i+\gamma Z_i+\epsilon_i\]</span></p>
 <p><span class="math display">\[\text{with } \epsilon \sim N(\mu=0,\sigma_{\epsilon}^{2}) \text{ , i.i.d.}\]</span></p>
-<p>Note: <span class="math inline">\(Z_i\)</span> in the equation above could be a vector of covariates (i.e., more than one additional independent variable). <span class="math inline">\(\gamma\)</span> represents a vector of regression coefficients. <span class="math inline">\(Z\)</span> is used instead of <span class="math inline">\(X\)</span> to explicitely differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex). Plus, multiple linear regression is an example of multivariable model, since multiple independent variables are considered in the same model.</p>
+<p><span class="math inline">\(Z_i\)</span> in the equation above could be a vector of covariates (i.e., more than one additional independent variable). <span class="math inline">\(\gamma\)</span> represents a vector of regression coefficients. <span class="math inline">\(Z\)</span> is used instead of <span class="math inline">\(X\)</span> to explicitly differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex). Plus, multiple linear regression is an example of multivariable model, since multiple independent variables are considered in the same model.</p>
 <p>Finally, the regression coefficient <span class="math inline">\(\beta_X\)</span> indicates the change in <span class="math inline">\(Y\)</span> on the original scale for a 1-unit increase in <span class="math inline">\(X\)</span>. Indeed, the the oucome is untransformed (link = “identity”).</p>
 </section>
 <section id="simple-logistic-regression" class="level2">
 <h2 class="anchored" data-anchor-id="simple-logistic-regression">Simple logistic regression</h2>
-<p>The expected value of <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span>, <span class="math inline">\(E(Y_i|X_i)\)</span>, is:</p>
+<p>The probability of a binary <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span>, <span class="math inline">\(Pr(Y|X)\)</span>, is:</p>
 <p><span class="math display">\[\text{logit}(\pi)=\beta_0+\beta_XX_i\]</span></p>
-<p><span class="math display">\[\text{with logit}(\pi)=log(\frac{\pi}{1-\pi})\]</span></p>
-<p>which reads as: the expected value of the binary outcome <span class="math inline">\(Y\)</span> (denoted as <span class="math inline">\(\pi\)</span>) equals to a constant <span class="math inline">\(\beta_0\)</span> (model intercept) plus the value of <span class="math inline">\(X\)</span> for the <span class="math inline">\(i\)</span><sup>th</sup> individual multiplied by the regression coefficient <span class="math inline">\(\beta_X\)</span> <strong>on the natural logarithm scale</strong>.</p>
+<p><span class="math display">\[\text{with logit}(\pi)=log(\frac{Y}{1-Y})\]</span></p>
+<p>which reads as: the probability of the binary outcome <span class="math inline">\(Y\)</span> (denoted as <span class="math inline">\(\pi\)</span>) equals to a constant <span class="math inline">\(\beta_0\)</span> (model intercept) plus the value of <span class="math inline">\(X\)</span> for the <span class="math inline">\(i\)</span><sup>th</sup> individual multiplied by the regression coefficient <span class="math inline">\(\beta_X\)</span> <strong>on the natural logarithm scale</strong>.</p>
 <p>Note: statistical softwares automatically transform data as long as the distribution family (i.e., binomial) and link (i.e., logit) are specified and the outcome <span class="math inline">\(Y\)</span> is indeed a binary outcome.</p>
-<p>Since the outcome is log-transformed with the “logit” link function, the regression coefficient <span class="math inline">\(\beta_X\)</span> indicates the change in <span class="math inline">\(\text{logit}(\pi)\)</span> on the log-scale for a 1-unit increase in <span class="math inline">\(X\)</span>. Typically, the value of the coefficient on the log scale is harder to interpret and the coefficient is exponentiated <span class="math inline">\(e^{\beta_x}\)</span>. <span class="math inline">\(e^{\beta_x}\)</span> then equals to the <strong>odds ratio</strong>, which indicates the (multiplicative) change of the odds of outcome for a 1-unit increase in <span class="math inline">\(X\)</span>. Statistical software often provides convenient options to automatically calculate odds ratios.</p>
+<p>Since the outcome is log-transformed with the “logit” link function, the regression coefficient <span class="math inline">\(\beta_X\)</span> indicates the change in <span class="math inline">\(\text{logit}(\pi)\)</span> on the log-scale for a 1-unit increase in <span class="math inline">\(X\)</span>. Typically, the value of the coefficient on the log scale is harder to interpret and the coefficient is exponentiated <span class="math inline">\(e^{\beta_x}\)</span>. <span class="math inline">\(e^{\beta_x}\)</span> then equals to the <strong>odds ratio</strong>, which indicates the (multiplicative) change of the odds of outcome for a 1-unit increase in <span class="math inline">\(X\)</span>. Statistical software often provides convenient options to automatically calculate odds ratios, risk ratios or probability.</p>
+</section>
+<section id="multiple-logistic-regression" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-logistic-regression">Multiple logistic regression</h2>
+<p>Similar to multiple linear regression, the probability of a binary <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span>, <span class="math inline">\(Pr(Y|X, Z)\)</span>, is:</p>
+<p><span class="math display">\[\text{logit}(\pi)=\beta_0+\beta_XX_i+\gamma Z_i\]</span></p>
+<p><span class="math display">\[\text{with logit}(\pi)=log(\frac{Y}{1-Y})\]</span></p>
+<p><span class="math inline">\(Z_i\)</span> in the equation above could be a vector of covariates (i.e., more than one additional independent variable). <span class="math inline">\(\gamma\)</span> represents a vector of regression coefficients. <span class="math inline">\(Z\)</span> is used instead of <span class="math inline">\(X\)</span> to explicitly differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex).</p>
 </section>
 </section>
 <section id="assumptions" class="level1">
@@ -408,7 +428,7 @@ div.csl-indent {
 <ol type="1">
 <li><p>When dealing with multiple outcome measurements among the same individuals, mixed models (also called hierarchical or random-effects model) can be used to consider the correlation structure among repeated measurements. Such models relax the <strong>independence</strong> assumption.</p></li>
 <li><p>We can relax the <strong>normality</strong> assumption of errors. There are other distribution family that can be used for the distribution of residuals (e.g., binominal, gamma, poisson). These distribution families allow to model different types of outcome, including skewed distributions, count data, binary outcome, etc. Transformations can also be applied to the outcome variable, e.g., the log transformation.</p></li>
-<li><p>When errors are not identically distributed across values of <span class="math inline">\(X\)</span> (i.e., heteroscedasticity), transformations of outcome variable may be sufficient. The <a href="https://didierbrassard.github.io/posts/2023/04/blog-post-3/">log transformation</a> is common and relax the <strong>homoscedasticity</strong> assumption. In addition, if heteroscedasticity is a major concern and transformations are not an option, <a href="https://didierbrassard.github.io/posts/2022/10/blog-post-4/">a bootstrap approach</a> for variance estimation could be used.</p></li>
+<li><p>When errors are not identically distributed across values of <span class="math inline">\(X\)</span> (i.e., heteroscedasticity), transformations of outcome variable may be sufficient. The <a href="https://didierbrassard.github.io/posts/2023/04/blog-post-3/">log transformation</a> is common and relax the <strong>homoscedasticity</strong> assumption. In addition, if heteroscedasticity is a major concern and transformations are not an option, <a href="https://didierbrassard.github.io/posts/2022/10/blog-post-4/">a bootstrap approach</a> for variance estimation could be used <span class="citation" data-cites="Bland2015">(<a href="#ref-Bland2015" role="doc-biblioref">Bland and Altman 2015</a>)</span>.</p></li>
 <li><p>Simple statistical transformation (e.g., <a href="https://didierbrassard.github.io/posts/2023/02/blog-post-1/">restricted cubic spline</a>) can be used for continuous independent variables <span class="citation" data-cites="Harrell2015">(<a href="#ref-Harrell2015" role="doc-biblioref">Harrell 2015</a>)</span>. These transformations allow to consider potential non-linearity and, accordingly, relax the <strong>linearity</strong> assumption.</p></li>
 </ol>
 <p>Finally, minor departure from ideal scenarios are often not a cause for major concerns, e.g., see <span class="citation" data-cites="Lumley2002">Lumley et al. (<a href="#ref-Lumley2002" role="doc-biblioref">2002</a>)</span> for a discussion around the normality assumption.</p>
@@ -423,11 +443,17 @@ Altman, D. G., and P. Royston. 2006. <span>“The Cost of Dichotomising Continuo
 <div id="ref-Bennette2012" class="csl-entry" role="listitem">
 Bennette, C., and A. Vickers. 2012. <span>“Against Quantiles: Categorization of Continuous Variables in Epidemiologic Research, and Its Discontents.”</span> Journal Article. <em>BMC Med Res Methodol</em> 12: 21. <a href="https://doi.org/10.1186/1471-2288-12-21">https://doi.org/10.1186/1471-2288-12-21</a>.
 </div>
+<div id="ref-Bland2015" class="csl-entry" role="listitem">
+Bland, J. M., and D. G. Altman. 2015. <span>“Statistics Notes: Bootstrap Resampling Methods.”</span> Journal Article. <em>BMJ</em> 350: h2622. <a href="https://doi.org/10.1136/bmj.h2622">https://doi.org/10.1136/bmj.h2622</a>.
+</div>
 <div id="ref-Bosy2013" class="csl-entry" role="listitem">
 Bosy-Westphal, A., B. Schautz, W. Later, J. J. Kehayias, D. Gallagher, and M. J. Muller. 2013. <span>“What Makes a BIA Equation Unique? Validity of Eight-Electrode Multifrequency BIA to Estimate Body Composition in a Healthy Adult Population.”</span> Journal Article. <em>Eur J Clin Nutr</em> 67 Suppl 1: S14–21. <a href="https://doi.org/10.1038/ejcn.2012.160">https://doi.org/10.1038/ejcn.2012.160</a>.
 </div>
 <div id="ref-Brown2013" class="csl-entry" role="listitem">
 Brown, I. J., A. R. Dyer, Q. Chan, M. E. Cogswell, H. Ueshima, J. Stamler, P. Elliott, and Intersalt Co-Operative Research Group. 2013. <span>“Estimating 24-Hour Urinary Sodium Excretion from Casual Urinary Sodium Concentrations in Western Populations: The INTERSALT Study.”</span> Journal Article. <em>Am J Epidemiol</em> 177 (11): 1180–92. <a href="https://doi.org/10.1093/aje/kwt066">https://doi.org/10.1093/aje/kwt066</a>.
+</div>
+<div id="ref-Cro2022" class="csl-entry" role="listitem">
+Cro, S. 2022. <span>“Time to Improve the Clarity of Clinical Trial Reports by Including Estimands.”</span> Journal Article. <em>BMJ</em> 378: o2108. <a href="https://doi.org/10.1136/bmj.o2108">https://doi.org/10.1136/bmj.o2108</a>.
 </div>
 <div id="ref-Harrell2015" class="csl-entry" role="listitem">
 Harrell, F. E. 2015. <em>Regression Modeling Strategies: With Applications to Linear Models, Logistic Regression, and Survival Analysis</em>. Book. Springer International Publishing. <a href="https://books.google.ca/books?id=kfHrF-bVcvQC">https://books.google.ca/books?id=kfHrF-bVcvQC</a>.
