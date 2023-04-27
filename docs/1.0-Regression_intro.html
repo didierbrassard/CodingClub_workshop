@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.296">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-04-27">
+
+<title>Regression workshop: introduction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-is-regression" id="toc-what-is-regression" class="nav-link active" data-scroll-target="#what-is-regression">What is ‘regression’?</a>
+  <ul class="collapse">
+  <li><a href="#examples-of-regression-model-in-nutrition-research" id="toc-examples-of-regression-model-in-nutrition-research" class="nav-link" data-scroll-target="#examples-of-regression-model-in-nutrition-research">Examples of regression model in nutrition research</a></li>
+  </ul></li>
+  <li><a href="#nomenclature" id="toc-nomenclature" class="nav-link" data-scroll-target="#nomenclature">Nomenclature</a>
+  <ul class="collapse">
+  <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
+  <li><a href="#language" id="toc-language" class="nav-link" data-scroll-target="#language">Language</a></li>
+  </ul></li>
+  <li><a href="#regression-model-equations" id="toc-regression-model-equations" class="nav-link" data-scroll-target="#regression-model-equations">Regression model equations</a>
+  <ul class="collapse">
+  <li><a href="#simple-linear-regression" id="toc-simple-linear-regression" class="nav-link" data-scroll-target="#simple-linear-regression">Simple linear regression</a></li>
+  <li><a href="#multiple-linear-regression" id="toc-multiple-linear-regression" class="nav-link" data-scroll-target="#multiple-linear-regression">Multiple linear regression</a></li>
+  <li><a href="#simple-logistic-regression" id="toc-simple-logistic-regression" class="nav-link" data-scroll-target="#simple-logistic-regression">Simple logistic regression</a></li>
+  <li><a href="#multiple-logistic-regression" id="toc-multiple-logistic-regression" class="nav-link" data-scroll-target="#multiple-logistic-regression">Multiple logistic regression</a></li>
+  </ul></li>
+  <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions">Assumptions</a>
+  <ul class="collapse">
+  <li><a href="#linear-regression" id="toc-linear-regression" class="nav-link" data-scroll-target="#linear-regression">Linear regression</a>
+  <ul class="collapse">
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul></li>
+  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic regression</a></li>
+  <li><a href="#relaxing-assumptions" id="toc-relaxing-assumptions" class="nav-link" data-scroll-target="#relaxing-assumptions">Relaxing assumptions</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regression workshop: introduction</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 27, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><em>Disclaimer: the goal of this workshop is to provide an introduction and working knowledge of regression models with interest for nutrition-related analyses. It is not intended to comprehensively cover all aspects.</em></p>
+<div style="page-break-after: always;"></div>
+<section id="what-is-regression" class="level1">
+<h1>What is ‘regression’?</h1>
+<p><span class="math display">\[Y=mx+b\]</span></p>
+<p>Statistical models used for descriptive research, prediction and causal inference.</p>
+<section id="examples-of-regression-model-in-nutrition-research" class="level2">
+<h2 class="anchored" data-anchor-id="examples-of-regression-model-in-nutrition-research">Examples of regression model in nutrition research</h2>
+<ul>
+<li>Prediction equation for energy expenditure
+<ul>
+<li>Harris-Benedict equation</li>
+<li>Institute of Medicine equations</li>
+</ul></li>
+<li>Prediction equation to estimate sodium intake based on urinary excretion <span class="citation" data-cites="Brown2013">(<a href="#ref-Brown2013" role="doc-biblioref">Brown et al. 2013</a>)</span></li>
+<li>Bioelectrical impedance equations <span class="citation" data-cites="Bosy2013">(<a href="#ref-Bosy2013" role="doc-biblioref">Bosy-Westphal et al. 2013</a>)</span></li>
+<li>Canadian Nutrition Screening Tool <span class="citation" data-cites="Laporte2014">(<a href="#ref-Laporte2014" role="doc-biblioref">Laporte et al. 2015</a>)</span></li>
+<li>Estimating the effect of an intervention or dietary exposure</li>
+</ul>
+<p>Regression models sometimes have specific names depending on the particular setting and field. For example, T-tests, ANOVA, ANCOVA are <a href="https://drmowinckels.io/blog/2020-06-24-the-linear-regression-family-in-r/">all regression models!</a></p>
+</section>
+</section>
+<section id="nomenclature" class="level1">
+<h1>Nomenclature</h1>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<ul>
+<li><span class="math inline">\(Y\)</span> dependent variable (i.e.&nbsp;outcome)</li>
+<li><span class="math inline">\(X\)</span> independent variable(s)</li>
+<li><span class="math inline">\(Z\)</span> sometimes used to refer to covariates</li>
+<li><span class="math inline">\(\beta\)</span> regression coefficient (beta)</li>
+<li><span class="math inline">\(i\)</span> individuals or observations</li>
+<li><span class="math inline">\(E\)</span> expected value
+<ul>
+<li><span class="math inline">\(E(X)\)</span> expected value of <span class="math inline">\(X\)</span></li>
+<li><span class="math inline">\(E(Y|X)\)</span> expected value of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span></li>
+<li><span class="math inline">\(E(Y|X=0)\)</span> expected value of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span> having a value of <span class="math inline">\(0\)</span></li>
+<li><span class="math inline">\(E(Y|X, Z)\)</span> expected value of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span> <strong>and</strong> <span class="math inline">\(Z\)</span></li>
+</ul></li>
+<li><span class="math inline">\(Pr\)</span> or <span class="math inline">\(P\)</span> probability of outcome (same as expected value, but for binary outcomes)
+<ul>
+<li><span class="math inline">\(Pr(Y)\)</span> probability of <span class="math inline">\(Y\)</span></li>
+<li><span class="math inline">\(Pr(Y|X)\)</span> probability of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span></li>
+<li><span class="math inline">\(Pr(Y|X=0)\)</span> probability of <span class="math inline">\(Y\)</span> given or conditional on <span class="math inline">\(X\)</span> having a value of <span class="math inline">\(0\)</span></li>
+</ul></li>
+<li><span class="math inline">\(\epsilon\)</span> errors or residuals</li>
+<li><span class="math inline">\(i.i.d.\)</span> independent and identically distributed</li>
+<li><span class="math inline">\(\sigma^2\)</span> variance</li>
+<li><span class="math inline">\(N\)</span> normality or normal distribution</li>
+</ul>
+</section>
+<section id="language" class="level2">
+<h2 class="anchored" data-anchor-id="language">Language</h2>
+<ul>
+<li><p><strong>Regression coefficient, beta coefficient or</strong> <span class="math inline">\(\beta\)</span>: refer to the strength of the relationship between the independent and dependent variables. The regression coefficient typically indicates the expected change in outcome <span class="math inline">\(Y\)</span> for <strong>1-unit</strong> increase in <span class="math inline">\(X\)</span>.</p></li>
+<li><p><strong>Simple vs.&nbsp;multiple</strong>: a model with only a single independent variable <span class="math inline">\(X\)</span> is typically termed as a simple regression model, while a model with two or more independent variables <span class="math inline">\(X_1, X_2, ...,X_j\)</span> is termed a multiple regression model.</p></li>
+<li><p><strong>Multivariable vs.&nbsp;multivariate</strong>: these terms refer to two different types regression model <span class="citation" data-cites="Hidalgo2013">(<a href="#ref-Hidalgo2013" role="doc-biblioref">Hidalgo and Goodman 2013</a>)</span>. Multivari<strong>able</strong> is the most common model, where many independent variables <span class="math inline">\(X_1, X_2, ...,X_j\)</span> are considered. Multivar<strong>iate</strong> refers to a model where many dependent variables <span class="math inline">\(Y_1, Y_2, ..., Y_k\)</span> are considered. For example, a multivariate model is necessary for a study design with repeated outcome measurements on the same study participants.</p></li>
+<li><p><strong>Estimand, estimator and estimate</strong>: the estimand is the “definition of precisely what the [study] demands to find out” <span class="citation" data-cites="Cro2022">(<a href="#ref-Cro2022" role="doc-biblioref">Cro 2022</a>)</span>, the estimator is the statistical analysis and the estimate is the numerical result of the statistical analysis. A helpful metaphor is to think of the estimand as the intended recipe, the estimator as the preparation, and the estimate as the meal obtained in the end. More precisely:</p>
+<ul>
+<li><strong>Estimand</strong>: <span class="math inline">\(E(Y|X=1) - E(Y|X=0)\)</span> could be the difference in outcome when <span class="math inline">\(X=1\)</span> vs., instead, when <span class="math inline">\(X=0\)</span></li>
+<li><strong>Estimator</strong>: <span class="math inline">\(Y_i=\beta_0+\beta_XX_i+\epsilon_i\)</span> could be the simple linear regression model used for the analysis. In this example, <span class="math inline">\(X\)</span> could be an indicator of whether a given individual was randomized to intervention (<span class="math inline">\(X=1\)</span>) or control (<span class="math inline">\(X=0\)</span>).</li>
+<li><strong>Estimate</strong>: <span class="math inline">\(\beta_X=+3.0 \text{ units}\)</span> could be the estimate of this analysis, i.e., the numerical quantity estimated by the estimator.</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="regression-model-equations" class="level1">
+<h1>Regression model equations</h1>
+<p>Regression models have a ‘generic’ format of <span class="math inline">\(f(Y_i)=\beta_1 X_{i1}+\beta_2 X_{i2}+...\beta_j X_{ij}\)</span>. These generic models are termed <strong>generalized linear models</strong>. Depending on the specific scientific objective and data, a choice of <strong>distribution family</strong> must be made. For a given regression equation and distribution family, the model’s outcome is assumed to follow a particular theoretical distribution. Choosing the proper distribution family is important, since it will ensure that the model properly fits the data. <span class="math inline">\(f(Y_i)\)</span> indicates that the outcome of interest can be transformed; this specific transformation is called a <strong>link</strong> function.</p>
+<p>For example, to properly model a continuous outcome <span class="math inline">\(Y\)</span>, we might opt for the normal/Gaussian distribution family with an identity link function (i.e., no transformation - the outcome data is used as it is). Indeed, when lacking prior information about the particular shape of the <span class="math inline">\(Y\)</span> outcome, the normal/Gaussian is a common default choice <span class="citation" data-cites="McElreath">(<a href="#ref-McElreath" role="doc-biblioref">McElreath 2020</a>)</span>. The corresponding regression model is a linear regression model for the outcome <span class="math inline">\(Y\)</span>. Note, however, that there are other relevant distribution family that might better fit a given continuous outcome (e.g., binominal, gamma, poisson), especially when we have prior knowledge about the shape of a given outcome’s distribution <span class="citation" data-cites="McElreath">(<a href="#ref-McElreath" role="doc-biblioref">McElreath 2020</a>)</span>.</p>
+<p>Another example of a common type of outcome is a binary <span class="math inline">\(Y\)</span> (yes/no or event/no event). To model such outcome, we might opt for a binomal distribution family with a logit link function (i.e., a transformation of <span class="math inline">\(Y\)</span>). The corresponding regression model is a logistic regression model, typically used for binary outcomes.</p>
+<div style="page-break-after: always;"></div>
+<section id="simple-linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="simple-linear-regression">Simple linear regression</h2>
+<p>The expected value of a continuous <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span>, <span class="math inline">\(E(Y|X)\)</span>, is:</p>
+<p><span class="math display">\[Y_i=\beta_0+\beta_XX_i+\epsilon_i\]</span></p>
+<p><span class="math display">\[\text{with } \epsilon \sim N(\mu=0,\sigma_{\epsilon}^{2}) \text{ , i.i.d.}\]</span></p>
+<p>which reads as: the expected value of continuous outcome <span class="math inline">\(Y\)</span> for <span class="math inline">\(i\)</span><sup>th</sup> individual equals to a constant <span class="math inline">\(\beta_0\)</span> (model intercept) plus the value of <span class="math inline">\(X\)</span> for the <span class="math inline">\(i\)</span><sup>th</sup> individual multiplied by the regression coefficient <span class="math inline">\(\beta_X\)</span> and with errors <span class="math inline">\(\epsilon\)</span>. The model errors <span class="math inline">\(\epsilon\)</span> are assumed to follow a normal distribution with a mean of 0 and constant variance (<span class="math inline">\(\sigma_{\epsilon}^{2}\)</span>). Furthermore, errors are assumed to be independent and identically distributed (i.i.d).</p>
+<p>This type of model is also called an <em>ordinary least squares</em> regression model.</p>
+</section>
+<section id="multiple-linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-linear-regression">Multiple linear regression</h2>
+<p>The expected value of a continuous <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> and covariates <span class="math inline">\(Z\)</span>, <span class="math inline">\(E(Y|X,Z)\)</span>, is:</p>
+<p><span class="math display">\[Y_i=\beta_0+\beta_XX_i+\gamma Z_i+\epsilon_i\]</span></p>
+<p><span class="math display">\[\text{with } \epsilon \sim N(\mu=0,\sigma_{\epsilon}^{2}) \text{ , i.i.d.}\]</span></p>
+<p><span class="math inline">\(Z_i\)</span> in the equation above could be a vector of covariates (i.e., more than one additional independent variable). <span class="math inline">\(\gamma\)</span> represents a vector of regression coefficients. <span class="math inline">\(Z\)</span> is used instead of <span class="math inline">\(X\)</span> to explicitly differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex). Plus, multiple linear regression is an example of multivariable model, since multiple independent variables are considered in the same model.</p>
+<p>Finally, the regression coefficient <span class="math inline">\(\beta_X\)</span> indicates the change in <span class="math inline">\(Y\)</span> on the original scale for a 1-unit increase in <span class="math inline">\(X\)</span>. Indeed, the the oucome is untransformed (link = “identity”).</p>
+</section>
+<section id="simple-logistic-regression" class="level2">
+<h2 class="anchored" data-anchor-id="simple-logistic-regression">Simple logistic regression</h2>
+<p>The probability of a binary <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span>, <span class="math inline">\(Pr(Y|X)\)</span>, is:</p>
+<p><span class="math display">\[\text{logit}(\pi)=\beta_0+\beta_XX_i\]</span></p>
+<p><span class="math display">\[\text{with logit}(\pi)=log(\frac{Y}{1-Y})\]</span></p>
+<p>which reads as: the probability of the binary outcome <span class="math inline">\(Y\)</span> (denoted as <span class="math inline">\(\pi\)</span>) equals to a constant <span class="math inline">\(\beta_0\)</span> (model intercept) plus the value of <span class="math inline">\(X\)</span> for the <span class="math inline">\(i\)</span><sup>th</sup> individual multiplied by the regression coefficient <span class="math inline">\(\beta_X\)</span> <strong>on the natural logarithm scale</strong>.</p>
+<p>Note: statistical softwares automatically transform data as long as the distribution family (i.e., binomial) and link (i.e., logit) are specified and the outcome <span class="math inline">\(Y\)</span> is indeed a binary outcome.</p>
+<p>Since the outcome is log-transformed with the “logit” link function, the regression coefficient <span class="math inline">\(\beta_X\)</span> indicates the change in <span class="math inline">\(\text{logit}(\pi)\)</span> on the log-scale for a 1-unit increase in <span class="math inline">\(X\)</span>. Typically, the value of the coefficient on the log scale is harder to interpret and the coefficient is exponentiated <span class="math inline">\(e^{\beta_x}\)</span>. <span class="math inline">\(e^{\beta_x}\)</span> then equals to the <strong>odds ratio</strong>, which indicates the (multiplicative) change of the odds of outcome for a 1-unit increase in <span class="math inline">\(X\)</span>. Statistical software often provides convenient options to automatically calculate odds ratios, risk ratios or probability.</p>
+</section>
+<section id="multiple-logistic-regression" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-logistic-regression">Multiple logistic regression</h2>
+<p>Similar to multiple linear regression, the probability of a binary <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span>, <span class="math inline">\(Pr(Y|X, Z)\)</span>, is:</p>
+<p><span class="math display">\[\text{logit}(\pi)=\beta_0+\beta_XX_i+\gamma Z_i\]</span></p>
+<p><span class="math display">\[\text{with logit}(\pi)=log(\frac{Y}{1-Y})\]</span></p>
+<p><span class="math inline">\(Z_i\)</span> in the equation above could be a vector of covariates (i.e., more than one additional independent variable). <span class="math inline">\(\gamma\)</span> represents a vector of regression coefficients. <span class="math inline">\(Z\)</span> is used instead of <span class="math inline">\(X\)</span> to explicitly differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex).</p>
+</section>
+</section>
+<section id="assumptions" class="level1">
+<h1>Assumptions</h1>
+<p><a href="https://en.wikipedia.org/wiki/All_models_are_wrong">“All models are wrong, but some are useful”</a></p>
+<p>Even under best conditions, models never perfectly fit data and will always be some approximation of complex phenomenon. For this reason, care should be taken to ensure that the statistical modelling is truthful to the data generating process (i.e., how the data was created) before and after fitting the model.</p>
+<p>Before fitting the model, the appropriate model for a given research question and data must be selected. After fitting the model, the models’ assumptions should be verfiied to ensure they are <em>sufficiently</em> satisfied. This verification process is somewhat subjective. When in doubt, statistical methods should be applied to relax assumptions and make the model more robust.</p>
+<section id="linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="linear-regression">Linear regression</h2>
+<p>For a linear regression model (ordinary least-squares), we assume that the errors <span class="math inline">\(\epsilon\)</span> (i.e., residuals; the difference between the actual observed value and the value predicted by the equation) are:</p>
+<ol type="1">
+<li>independent. In other words, any individuals or observations are not related;</li>
+<li>follow a normal/Gaussian distribution;</li>
+<li>identically distributed across values of <span class="math inline">\(X\)</span> (i.e., homoscedastic). In other words, the variance of the errors is the same for any <span class="math inline">\(X\)</span>.</li>
+</ol>
+<p>Additionally, we further assume that the relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span></p>
+<ol start="4" type="1">
+<li>follows a linear curve. In other words, we can draw a straight line across points when we draw a plot of <span class="math inline">\(E(Y|X)\)</span></li>
+</ol>
+<p><a href="#tbl-assumptions">Table&nbsp;1</a> presents a summary of the model assumptions, verifications and solutions.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-assumptions" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Table&nbsp;1: Assumptions of linear regression model (ordinary least squares)</caption>
+<colgroup>
+<col style="width: 7%">
+<col style="width: 25%">
+<col style="width: 15%">
+<col style="width: 51%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Assumption</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Verifications</th>
+<th style="text-align: left;">Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Independence</td>
+<td style="text-align: left;">Observations or individuals should be independent</td>
+<td style="text-align: left;">Study design</td>
+<td style="text-align: left;">Use a hierarchical, mixed or random effects model instead of traditional model</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Normality</td>
+<td style="text-align: left;">Model errors/residuals follow a normal/Gaussian distribution</td>
+<td style="text-align: left;">Quantile quantile-plot of residuals</td>
+<td style="text-align: left;">Transformation of dependent variable (e.g., log) or using a different distribution family</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Homoscedasticity</td>
+<td style="text-align: left;">Variance of errors is constant across values of X</td>
+<td style="text-align: left;">Plot of residuals * predicted values</td>
+<td style="text-align: left;">Transformation of dependent variable (e.g., log), using a different distribution family or bootstrap variance estimation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Linearity</td>
+<td style="text-align: left;">The relationship between X and Y is linear</td>
+<td style="text-align: left;">Plot of X * Y</td>
+<td style="text-align: left;">Transformation of (continuous) independent variables (e.g., restricted cubic spline)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<section id="examples" class="level3">
+<h3 class="anchored" data-anchor-id="examples">Examples</h3>
+<p>Except for the independence assumption, graphical methods are helpful to verify the normality, homoscedasticity and linearity assumptions. The figures below demonstrate examples where the assumption is mostly satisfied vs.&nbsp;mostly not satisfied.</p>
+<p><a href="#fig-normal">Figure&nbsp;1</a> shows assessment of the normality assumption.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-normal" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="1.0-Regression_intro_files/figure-html/fig-normal-1.png" class="quarto-discovered-preview-image img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Normality assumption in linear regression model</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Common normality misconception</strong>: note that a common misconception is that the raw data, either <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span>, should be normally distributed. The linear regression model’s normality assumption is <strong>not</strong> for a particular variable, but <strong>for the residual/errors</strong> of the model <span class="citation" data-cites="Lumley2002">(<a href="#ref-Lumley2002" role="doc-biblioref">Lumley et al. 2002</a>)</span>. Thus, it is neither relevant nor required to assess normality of the raw data prior to modelling.</p>
+<p>TLDR:</p>
+<ul>
+<li><strong>Incorrect</strong>: “Raw data were not normal (P=0.01; Shapiro–Wilk test) and data were transformed before being entered into the linear regression model”;</li>
+<li><strong>Correct</strong>: “Quantile-Quantile plots were used to confirm that the linear regression models’ residuals were normally distributed. A log-transformation was applied for the outcome <span class="math inline">\(Y\)</span>, since residuals strongly deviated from normality (Supplemental Figure).”</li>
+</ul>
+<div style="page-break-after: always;"></div>
+<p><a href="#fig-variance">Figure&nbsp;2</a> show assessment of the homoscedasticity assumption.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-variance" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="1.0-Regression_intro_files/figure-html/fig-variance-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: Homoscedasticity assumption (constant variance of errors) in linear regression model</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+<p><a href="#fig-lin">Figure&nbsp;3</a> shows assessment of the linearity assumption.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-lin" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="1.0-Regression_intro_files/figure-html/fig-lin-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;3: Linearity assumption (linear relationship between X and Y) in linear regression model</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Categorization is an inefficient method:</strong> it might be tempting to categorize a continuous outcome to account for potential non-linearity. For example, traditional nutritional epidemiology articles often present estimates according to thirds (categorized by tertile), quarters (categorized by quartile), fifths (categorized by quintile). Another typical example is when two groups are compared after they have been dichotomized at the median value of a continuous variable <span class="citation" data-cites="Altman2006">(<a href="#ref-Altman2006" role="doc-biblioref">Altman and Royston 2006</a>)</span>. The categorization of continuous variables is very inefficient as it reduces power by deleting information <span class="citation" data-cites="Altman2006 Bennette2012 Harrell2015">(<a href="#ref-Altman2006" role="doc-biblioref">Altman and Royston 2006</a>; <a href="#ref-Bennette2012" role="doc-biblioref">Bennette and Vickers 2012</a>; <a href="#ref-Harrell2015" role="doc-biblioref">Harrell 2015</a>)</span>. Given the availability of flexible modelling strategy (e.g., restricted cubic spline), categorization is inadvisable <span class="citation" data-cites="Bennette2012">(<a href="#ref-Bennette2012" role="doc-biblioref">Bennette and Vickers 2012</a>)</span>.</p>
+<p>TLDR:</p>
+<ul>
+<li><strong>Incorrect</strong>: “Preliminary analyses revealed a non-linear relationship. The independent variable was categorized in four groups (quartiles) to satisfy assumption of the linear model.”;</li>
+<li><strong>Correct</strong>: “To account for potential non-linearity, a restricted cubic spline transformation with 4 knots (quantiles 0.05, 0.275, 0.50, 0.725 and 0.95) was applied to continuous variables.”</li>
+</ul>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+<section id="logistic-regression" class="level2">
+<h2 class="anchored" data-anchor-id="logistic-regression">Logistic regression</h2>
+<p>For a logistic regression model, we assume that:</p>
+<ol type="1">
+<li>the observations are independent. In other words, any individuals or observations are not related;</li>
+<li>the outcome has a linear relationship with each independent variable <strong>on the log scale</strong>.</li>
+</ol>
+<p>Similar to linear regression, the independence assumption is usually verified by knowing about the study design. The linearity assumption can be verified by plotting the logit of <span class="math inline">\(Y\)</span> according to independent variable(s) on the log scale.</p>
+<p><a href="#tbl-log-assumption">Table&nbsp;2</a> presents a summary of the model assumptions, verifications and solutions.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-log-assumption" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Table&nbsp;2: Assumptions of logistic regression model</caption>
+<colgroup>
+<col style="width: 7%">
+<col style="width: 29%">
+<col style="width: 12%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Assumption</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Verifications</th>
+<th style="text-align: left;">Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Independence</td>
+<td style="text-align: left;">Observations or individuals should be independent</td>
+<td style="text-align: left;">Study design</td>
+<td style="text-align: left;">Use a hierarchical, mixed or random effects model instead of traditional model</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Linearity</td>
+<td style="text-align: left;">The relationship between X and logit(Y) is linear</td>
+<td style="text-align: left;">Plot of X * logit(Y)</td>
+<td style="text-align: left;">Transformation of (continuous) independent variables (e.g., restricted cubic spline)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="relaxing-assumptions" class="level2">
+<h2 class="anchored" data-anchor-id="relaxing-assumptions">Relaxing assumptions</h2>
+<p>There are several statistical methods to relax the assumptions described above.</p>
+<ol type="1">
+<li><p>When dealing with multiple outcome measurements among the same individuals, mixed models (also called hierarchical or random-effects model) can be used to consider the correlation structure among repeated measurements. Such models relax the <strong>independence</strong> assumption.</p></li>
+<li><p>We can relax the <strong>normality</strong> assumption of errors. There are other distribution family that can be used for the distribution of residuals (e.g., binominal, gamma, poisson). These distribution families allow to model different types of outcome, including skewed distributions, count data, binary outcome, etc. Transformations can also be applied to the outcome variable, e.g., the log transformation.</p></li>
+<li><p>When errors are not identically distributed across values of <span class="math inline">\(X\)</span> (i.e., heteroscedasticity), transformations of outcome variable may be sufficient. The <a href="https://didierbrassard.github.io/posts/2023/04/blog-post-3/">log transformation</a> is common and relax the <strong>homoscedasticity</strong> assumption. In addition, if heteroscedasticity is a major concern and transformations are not an option, <a href="https://didierbrassard.github.io/posts/2022/10/blog-post-4/">a bootstrap approach</a> for variance estimation could be used <span class="citation" data-cites="Bland2015">(<a href="#ref-Bland2015" role="doc-biblioref">Bland and Altman 2015</a>)</span>.</p></li>
+<li><p>Simple statistical transformation (e.g., <a href="https://didierbrassard.github.io/posts/2023/02/blog-post-1/">restricted cubic spline</a>) can be used for continuous independent variables <span class="citation" data-cites="Harrell2015">(<a href="#ref-Harrell2015" role="doc-biblioref">Harrell 2015</a>)</span>. These transformations allow to consider potential non-linearity and, accordingly, relax the <strong>linearity</strong> assumption.</p></li>
+</ol>
+<p>Finally, minor departure from ideal scenarios are often not a cause for major concerns, e.g., see <span class="citation" data-cites="Lumley2002">Lumley et al. (<a href="#ref-Lumley2002" role="doc-biblioref">2002</a>)</span> for a discussion around the normality assumption.</p>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Altman2006" class="csl-entry" role="listitem">
+Altman, D. G., and P. Royston. 2006. <span>“The Cost of Dichotomising Continuous Variables.”</span> Journal Article. <em>BMJ</em> 332 (7549): 1080. <a href="https://doi.org/10.1136/bmj.332.7549.1080">https://doi.org/10.1136/bmj.332.7549.1080</a>.
+</div>
+<div id="ref-Bennette2012" class="csl-entry" role="listitem">
+Bennette, C., and A. Vickers. 2012. <span>“Against Quantiles: Categorization of Continuous Variables in Epidemiologic Research, and Its Discontents.”</span> Journal Article. <em>BMC Med Res Methodol</em> 12: 21. <a href="https://doi.org/10.1186/1471-2288-12-21">https://doi.org/10.1186/1471-2288-12-21</a>.
+</div>
+<div id="ref-Bland2015" class="csl-entry" role="listitem">
+Bland, J. M., and D. G. Altman. 2015. <span>“Statistics Notes: Bootstrap Resampling Methods.”</span> Journal Article. <em>BMJ</em> 350: h2622. <a href="https://doi.org/10.1136/bmj.h2622">https://doi.org/10.1136/bmj.h2622</a>.
+</div>
+<div id="ref-Bosy2013" class="csl-entry" role="listitem">
+Bosy-Westphal, A., B. Schautz, W. Later, J. J. Kehayias, D. Gallagher, and M. J. Muller. 2013. <span>“What Makes a BIA Equation Unique? Validity of Eight-Electrode Multifrequency BIA to Estimate Body Composition in a Healthy Adult Population.”</span> Journal Article. <em>Eur J Clin Nutr</em> 67 Suppl 1: S14–21. <a href="https://doi.org/10.1038/ejcn.2012.160">https://doi.org/10.1038/ejcn.2012.160</a>.
+</div>
+<div id="ref-Brown2013" class="csl-entry" role="listitem">
+Brown, I. J., A. R. Dyer, Q. Chan, M. E. Cogswell, H. Ueshima, J. Stamler, P. Elliott, and Intersalt Co-Operative Research Group. 2013. <span>“Estimating 24-Hour Urinary Sodium Excretion from Casual Urinary Sodium Concentrations in Western Populations: The INTERSALT Study.”</span> Journal Article. <em>Am J Epidemiol</em> 177 (11): 1180–92. <a href="https://doi.org/10.1093/aje/kwt066">https://doi.org/10.1093/aje/kwt066</a>.
+</div>
+<div id="ref-Cro2022" class="csl-entry" role="listitem">
+Cro, S. 2022. <span>“Time to Improve the Clarity of Clinical Trial Reports by Including Estimands.”</span> Journal Article. <em>BMJ</em> 378: o2108. <a href="https://doi.org/10.1136/bmj.o2108">https://doi.org/10.1136/bmj.o2108</a>.
+</div>
+<div id="ref-Harrell2015" class="csl-entry" role="listitem">
+Harrell, F. E. 2015. <em>Regression Modeling Strategies: With Applications to Linear Models, Logistic Regression, and Survival Analysis</em>. Book. Springer International Publishing. <a href="https://books.google.ca/books?id=kfHrF-bVcvQC">https://books.google.ca/books?id=kfHrF-bVcvQC</a>.
+</div>
+<div id="ref-Hidalgo2013" class="csl-entry" role="listitem">
+Hidalgo, B., and M. Goodman. 2013. <span>“Multivariate or Multivariable Regression?”</span> Journal Article. <em>Am J Public Health</em> 103 (1): 39–40. <a href="https://doi.org/10.2105/AJPH.2012.300897">https://doi.org/10.2105/AJPH.2012.300897</a>.
+</div>
+<div id="ref-Laporte2014" class="csl-entry" role="listitem">
+Laporte, M., H. H. Keller, H. Payette, J. P. Allard, D. R. Duerksen, P. Bernier, K. Jeejeebhoy, et al. 2015. <span>“Validity and Reliability of the New Canadian Nutrition Screening Tool in the ’Real-World’ Hospital Setting.”</span> Journal Article. <em>Eur J Clin Nutr</em> 69 (5): 558–64. <a href="https://doi.org/10.1038/ejcn.2014.270">https://doi.org/10.1038/ejcn.2014.270</a>.
+</div>
+<div id="ref-Lumley2002" class="csl-entry" role="listitem">
+Lumley, T., P. Diehr, S. Emerson, and L. Chen. 2002. <span>“The Importance of the Normality Assumption in Large Public Health Data Sets.”</span> Journal Article. <em>Annu Rev Public Health</em> 23: 151–69. <a href="https://doi.org/10.1146/annurev.publhealth.23.100901.140546">https://doi.org/10.1146/annurev.publhealth.23.100901.140546</a>.
+</div>
+<div id="ref-McElreath" class="csl-entry" role="listitem">
+McElreath, Richard. 2020. <em>Statistical Rethinking: A Bayesian Course with Examples in r and STAN</em>. Book. 2nd Ed. Chapman; Hall/CRC. https://doi.org/<a href="https://doi.org/10.1201/9780429029608">https://doi.org/10.1201/9780429029608</a>.
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
