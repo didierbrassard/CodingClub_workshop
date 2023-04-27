@@ -1,0 +1,111 @@
+---
+title: "R Notebook"
+author: "Hannah Han"
+output:
+  html_document:
+    df_print: paged
+---
+
+# 1. Preparation
+## Import pacakges {.smaller}
+```{r}
+# install.packages(c("GGally", "mice", "tidyverse", "finalfit"))
+library(tidyverse) # for data wraggling
+library(finalfit) # great package to handle missing data
+library(GGally) # for visualizing missing pattern
+library(mice) # for multiple imputation
+```
+## Load demo data (if needed need) {.smaller}
+```{r}
+load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstration.rdata")
+
+# select a subset of multiple imputation practice
+MD <- cchs2015_demonstration %>%
+  select(participantid, age, sex, bmi,
+         energy, protein, cho, fat)
+
+# view MD subset
+str(MD)
+summary(MD)
+
+```
+* missing values are represented with NA
+* variables with missing: bmi
+
+# 2. Our question
+__Mock question of interest__: is energy intake associated with with fat intake?
+* Dependent: energy intake
+* Main predictor: fat intake 
+* Covariates of interest: age, sex, bmi
+* Auxiliary variables: 
+    + Variables that are either correlated with missing variable (r > 0.4) or believed to be associated with missingness. _Use your knowledge!_
+    + To increase power and/or help make the assumption of MAR more plausible
+* protein, cho
+
+# 3. Explore pattern of missingness
+```{r}
+explanatory = c("protein", "age", "sex", "bmi")
+dependent = "energy"
+
+# look for patterns of missingness
+MD %>%
+ missing_pattern(dependent, explanatory)
+
+# explore pattern of missingness
+MD %>%
+  missing_pairs(dependent, explanatory, position = "fill")
+
+# compare not missing vs. missing 
+explatory_compare = c("protein", "age", "sex", "energy")
+dependent_compare = "bmi"
+MD %>%
+  missing_compare(dependent_compare, explatory_compare) %>%
+  knitr::kable(row.names=FALSE, align = c("l", "l", "r", "r", "r"))
+```
+* there are two pattern of missingness
+* pattern of missingness
+    + _blue_: observed values
+    + _grey_: missing values
+    + the distribution of observed and missing BMI can be visually compared
+* difference in estimated protein and energy intake
+    + does not satisfy MCAR, more likely to be MAR
+    + would not recommend complete case analysis
+
+# 4. deciding how to handle the data: multiple imputation
+## 4.1 imputation phase {.smaller}
+* Dependent: energy intake
+* Main predictor: fat intake 
+* Covariates of interest: age, sex, bmi
+* Auxiliary variables: protein, cho
+```{r}
+# impute missing values for all variables using mice package
+# in our case, we would just need to include all variables in MD
+# number of imputation: 10
+multiple_imputation = mice(
+  MD,
+  seed = 123,
+  m = 10,
+  print = FALSE) 
+```
+__note__: mice has many prediction methods including Predictive Mean Matching, Chained Equations, Random Forests, etc. We are using the default Predictive Mean Matching
+
+## 4.2 analysis and pooling phase {.smaller}
+```{r}
+model_fit <- with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
+
+base::summary(mice::pool(model_fit))
+```
+# 5. potential things to think about
+* choose your auxiliary variables carefully! make suer to include all variables that you __think__ are associated with or predict missingness!
+* number of imputation: Recommendation varies. Rule of thumb:
+    + 5-20 imputations: low fractions
+    + as many as 50 or more if needed: high fraction
+    + bottom line: coefficient eventually stabilize after certain number of imputation. Can run different time of m to assess stability
+* about transformed variables: recommend to just treat them as another variable and back transform is necessary
+* __not covered but need to know__: there are ways to assess imputation quality!
+
+
+
+
+
+
