@@ -47,8 +47,8 @@ library(mice) # for multiple imputation
 ## Load demo data (if needed need)
 
 ``` r
-load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstration.rdata")
-
+load( here::here("data", "processed", "cchs2015_demonstration.rdata"))
+  
 # select a subset of multiple imputation practice
 MD <- cchs2015_demonstration %>%
   select(participantid, age, sex, bmi,
@@ -103,12 +103,18 @@ summary(MD)
 # 2. Our question
 
 **Mock question of interest**: is energy intake associated with with fat
-intake? - Dependent: energy intake - Main predictor: fat intake -
-Covariates of interest: age, sex, bmi - Auxiliary variables: + Variables
-that are either correlated with missing variable (r \> 0.4) or believed
-to be associated with missingness. *Use your knowledge!* + To increase
-power and/or help make the assumption of MAR more plausible - protein,
-cho
+intake?
+
+- Dependent: energy intake
+- Main predictor: fat intake
+- Covariates of interest: age, sex, bmi
+- Auxiliary variables:
+  - Variables that are either correlated with missing variable (r \>
+    0.4) or believed to be associated with missingness. *Use your
+    knowledge!*
+  - To increase power and/or help make the assumption of MAR more
+    plausible
+- protein, cho
 
 # 3. Explore pattern of missingness
 
@@ -196,18 +202,23 @@ default Predictive Mean Matching
 ## 4.2 analysis and pooling phase
 
 ``` r
-model_fit <- with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
+model_fit <-
+  with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
 
-base::summary(mice::pool(model_fit))
+base::summary(mice::pool(model_fit)) %>% 
+  tibble::as_tibble() |>
+   knitr::kable(
+     digits=2
+   )
 ```
 
-<div data-pagedtable="false">
-
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["term"],"name":[1],"type":["fct"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["std.error"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["statistic"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["df"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"(Intercept)","2":"921.657161","3":"85.4894377","4":"10.7809478","5":"378.8476","6":"8.146147e-24"},{"1":"fat","2":"17.040146","3":"0.3034922","4":"56.1468957","5":"992.7916","6":"2.252640e-310"},{"1":"age","2":"-2.531535","3":"0.9663635","4":"-2.6196505","5":"983.8133","6":"8.937510e-03"},{"1":"sexFemale","2":"-164.875863","3":"27.8930399","4":"-5.9110037","5":"990.4901","6":"4.674214e-09"},{"1":"bmi","2":"-1.013375","3":"2.5212532","4":"-0.4019332","5":"170.5429","6":"6.882365e-01"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-
-</div>
+| term        | estimate | std.error | statistic |     df | p.value |
+|:------------|---------:|----------:|----------:|-------:|--------:|
+| (Intercept) |   921.66 |     85.49 |     10.78 | 378.85 |    0.00 |
+| fat         |    17.04 |      0.30 |     56.15 | 992.79 |    0.00 |
+| age         |    -2.53 |      0.97 |     -2.62 | 983.81 |    0.01 |
+| sexFemale   |  -164.88 |     27.89 |     -5.91 | 990.49 |    0.00 |
+| bmi         |    -1.01 |      2.52 |     -0.40 | 170.54 |    0.69 |
 
 # 5. potential things to think about
 

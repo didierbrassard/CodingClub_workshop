@@ -17,8 +17,9 @@ library(mice) # for multiple imputation
 ```
 ## Load demo data (if needed need) {.smaller}
 ```{r}
-load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstration.rdata")
 
+load( here::here("data", "processed", "cchs2015_demonstration.rdata"))
+  
 # select a subset of multiple imputation practice
 MD <- cchs2015_demonstration %>%
   select(participantid, age, sex, bmi,
@@ -34,6 +35,7 @@ summary(MD)
 
 # 2. Our question
 __Mock question of interest__: is energy intake associated with with fat intake?
+
 - Dependent: energy intake
 - Main predictor: fat intake 
 - Covariates of interest: age, sex, bmi
@@ -91,9 +93,15 @@ __note__: mice has many prediction methods including Predictive Mean Matching, C
 
 ## 4.2 analysis and pooling phase {.smaller}
 ```{r}
-model_fit <- with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
+model_fit <-
+  with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
 
-base::summary(mice::pool(model_fit))
+base::summary(mice::pool(model_fit)) %>% 
+  tibble::as_tibble() |>
+   knitr::kable(
+     digits=2
+   )
+
 ```
 # 5. potential things to think about
 - choose your auxiliary variables carefully! make suer to include all variables that you __think__ are associated with or predict missingness!
