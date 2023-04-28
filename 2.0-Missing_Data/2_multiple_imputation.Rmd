@@ -2,19 +2,24 @@
 title: "Part 2: Multiple Imputation"
 author: "Hannah Han"
 output:
-  html_document
+  github_document
 ---
 
 # 1. Preparation
+
 ## Import pacakges {.smaller}
+
 ```{r}
+setwd("/Users/hannah/Documents/GitHub/CodingClub_workshop/2.0-Missing_Data")
 # install.packages(c("GGally", "mice", "tidyverse", "finalfit"))
 library(tidyverse) # for data wraggling
 library(finalfit) # great package to handle missing data
 library(GGally) # for visualizing missing pattern
 library(mice) # for multiple imputation
 ```
+
 ## Load demo data (if needed need) {.smaller}
+
 ```{r}
 # select a subset for multiple imputation exercise
 load( here::here("data", "processed", "cchs2015_demonstration.rdata"))
@@ -29,22 +34,24 @@ str(MD)
 summary(MD)
 
 ```
-- missing values are represented with NA
-- variables with missing: bmi
+
+-   missing values are represented with NA
+-   variables with missing: bmi
 
 # 2. Our question
 
-Mock question of interest: __is energy intake associated with with fat intake?__
+Mock question of interest: **is energy intake associated with with fat intake?**
 
-- Dependent: energy intake
-- Main predictor: fat intake 
-- Covariates of interest: age, sex, bmi
-- Auxiliary variables: 
-    + Variables that are either correlated with missing variable (r > 0.4) or believed to be associated with missingness. _Use your knowledge!_
-    + To increase power and/or help make the assumption of MAR more plausible
-    + protein, cho
+-   Dependent: energy intake
+-   Main predictor: fat intake
+-   Covariates of interest: age, sex, bmi
+-   Auxiliary variables:
+    -   Variables that are either correlated with missing variable (r \> 0.4) or believed to be associated with missingness. *Use your knowledge!*
+    -   To increase power and/or help make the assumption of MAR more plausible
+    -   protein, cho
 
 # 3. Explore pattern of missingness
+
 ```{r}
 explanatory = c("protein", "age", "sex", "bmi")
 dependent = "energy"
@@ -53,18 +60,20 @@ dependent = "energy"
 MD %>%
  missing_pattern(dependent, explanatory)
 ```
-- there are two pattern of missingness
+
+-   there are two pattern of missingness
 
 ```{r}
 # explore pattern of missingness
 MD %>%
   missing_pairs(dependent, explanatory, position = "fill")
 ```
-- pattern of missingness
-    + _blue_: observed values
-    + _grey_: missing values
-    + the distribution of observed and missing BMI can be visually compared
-    
+
+-   pattern of missingness
+    -   *blue*: observed values
+    -   *grey*: missing values
+    -   the distribution of observed and missing BMI can be visually compared
+
 ```{r}
 # compare not missing vs. missing 
 explatory_compare = c("protein", "age", "sex", "energy")
@@ -74,16 +83,19 @@ MD %>%
   knitr::kable(row.names=FALSE, align = c("l", "l", "r", "r", "r"))
 ```
 
-- difference in estimated protein and energy intake
-    + does not satisfy MCAR, more likely to be MAR
-    + would not recommend complete case analysis
+-   difference in estimated protein and energy intake
+    -   does not satisfy MCAR, more likely to be MAR
+    -   would not recommend complete case analysis
 
 # 4. deciding how to handle the data: multiple imputation
+
 ## 4.1 imputation phase {.smaller}
-- _Dependent_: energy intake
-- _Main predictor_: fat intake 
-- _Covariates of interest_: age, sex, bmi
-- _Auxiliary variables_: protein, cho
+
+-   *Dependent*: energy intake
+-   *Main predictor*: fat intake
+-   *Covariates of interest*: age, sex, bmi
+-   *Auxiliary variables*: protein, cho
+
 ```{r}
 # impute missing values for all variables using mice package
 # in our case, we would just need to include all variables in MD
@@ -94,9 +106,11 @@ multiple_imputation = mice(
   m = 10,
   print = FALSE) 
 ```
-__note__: mice has many prediction methods including Predictive Mean Matching, Chained Equations, Random Forests, etc. We are using the default Predictive Mean Matching
+
+**note**: mice has many prediction methods including Predictive Mean Matching, Chained Equations, Random Forests, etc. We are using the default Predictive Mean Matching
 
 ## 4.2 analysis and pooling phase {.smaller}
+
 ```{r}
 model_fit <-
   with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
@@ -110,20 +124,17 @@ base::summary(mice::pool(model_fit)) %>%
 ```
 
 # 5. potential things to think about
-- choose your auxiliary variables carefully! make sure to include all variables that you __think__ are associated with or predict missingness!
-- number of imputation: Recommendation varies. Rule of thumb:
-    + 5-20 imputations: low fractions of missingness
-    + as many as 50 or more if needed: high fraction of missingness
-    + bottom line: coefficient eventually stabilize after certain number of imputation. Can run different time of m to assess stability
-- about transformed variables: recommend to just treat them as another variable and back transform if necessary
-- __not covered but need to know__: there are ways to assess imputation quality!
+
+-   choose your auxiliary variables carefully! make sure to include all variables that you **think** are associated with or predict missingness!
+-   number of imputation: Recommendation varies. Rule of thumb:
+    -   5-20 imputations: low fractions of missingness
+    -   as many as 50 or more if needed: high fraction of missingness
+    -   bottom line: coefficient eventually stabilize after certain number of imputation. Can run different time of m to assess stability
+-   about transformed variables: recommend to just treat them as another variable and back transform if necessary
+-   **not covered but need to know**: there are ways to assess imputation quality!
 
 # 6. Reference
-- Multiple Imputation in SAS. UCLA: Statistical Consulting Group. From https://stats.oarc.ucla.edu/sas/seminars/multiple-imputation-in-sas/mi_new_1/ (accessed April 27, 2023)
-- Batra, Neale, et al. The Epidemiologist R Handbook. Chapter 20 Missing Data. 2021.
-- Enders, C. K. (2022). Applied Missing Data Analysis. Guilford Publications. https://books.google.ca/books?id=b294EAAAQBAJ 
 
-
-
-
-
+-   Multiple Imputation in SAS. UCLA: Statistical Consulting Group. From https://stats.oarc.ucla.edu/sas/seminars/multiple-imputation-in-sas/mi_new_1/ (accessed April 27, 2023)
+-   Batra, Neale, et al. The Epidemiologist R Handbook. Chapter 20 Missing Data. 2021.
+-   Enders, C. K. (2022). Applied Missing Data Analysis. Guilford Publications. https://books.google.ca/books?id=b294EAAAQBAJ

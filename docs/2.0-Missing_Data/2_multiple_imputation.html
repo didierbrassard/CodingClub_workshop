@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Hannah Han">
+
+<title>Part 2: Multiple Imputation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Part 2: Multiple Imputation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Hannah Han </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="preparation" class="level1">
+<h1>1. Preparation</h1>
+<section id="import-pacakges" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="import-pacakges">Import pacakges</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"/Users/hannah/Documents/GitHub/CodingClub_workshop/2.0-Missing_Data"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(c("GGally", "mice", "tidyverse", "finalfit"))</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># for data wraggling</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+✔ ggplot2 3.4.0      ✔ purrr   0.3.5 
+✔ tibble  3.1.8      ✔ dplyr   1.0.10
+✔ tidyr   1.2.1      ✔ stringr 1.4.1 
+✔ readr   2.1.3      ✔ forcats 0.5.2 
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(finalfit) <span class="co"># great package to handle missing data</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally) <span class="co"># for visualizing missing pattern</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'GGally':
+  method from   
+  +.gg   ggplot2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice) <span class="co"># for multiple imputation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'mice'
+
+The following object is masked from 'package:stats':
+
+    filter
+
+The following objects are masked from 'package:base':
+
+    cbind, rbind</code></pre>
+</div>
+</div>
+</section>
+<section id="load-demo-data-if-needed-need" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="load-demo-data-if-needed-need">Load demo data (if needed need)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># select a subset for multiple imputation exercise</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>( here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"cchs2015_demonstration.rdata"</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># select a subset of multiple imputation practice</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>MD <span class="ot">&lt;-</span> cchs2015_demonstration <span class="sc">%&gt;%</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(participantid, age, sex, bmi,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>         energy, protein, cho, fat)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># view MD subset</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(MD)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [1,000 × 8] (S3: tbl_df/tbl/data.frame)
+ $ participantid: num [1:1000] 9261 1881 16071 18893 1420 ...
+  ..- attr(*, "label")= chr "Unique identifier"
+ $ age          : num [1:1000] 20 56 35 33 49 27 35 46 55 50 ...
+  ..- attr(*, "label")= chr "Age, years"
+ $ sex          : Factor w/ 2 levels "Male","Female": 1 1 2 2 2 2 1 1 2 2 ...
+  ..- attr(*, "label")= chr "Sex"
+ $ bmi          : num [1:1000] NA 28.1 19.8 NA 22.5 ...
+  ..- attr(*, "label")= chr "Body mass index, kg/m2"
+ $ energy       : num [1:1000] 3157 1133 1879 1382 2148 ...
+  ..- attr(*, "label")= chr "Energy intake, kcal/d"
+ $ protein      : num [1:1000] 114.7 34.6 78.2 28.9 74.3 ...
+  ..- attr(*, "label")= chr "Protein intake, g/d"
+ $ cho          : num [1:1000] 291 203 137 126 321 ...
+  ..- attr(*, "label")= chr "Carbohydrate intake, g/d"
+ $ fat          : num [1:1000] 161.8 23.7 115.7 78 66.5 ...
+  ..- attr(*, "label")= chr "Fat intake, g/d"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(MD)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> participantid        age            sex           bmi            energy       
+ Min.   :   76   Min.   :19.00   Male  :498   Min.   :16.27   Min.   :  209.5  
+ 1st Qu.: 5111   1st Qu.:34.00   Female:502   1st Qu.:23.45   1st Qu.: 1348.3  
+ Median :10126   Median :46.00                Median :26.66   Median : 1796.2  
+ Mean   :10071   Mean   :45.53                Mean   :27.55   Mean   : 1953.2  
+ 3rd Qu.:14897   3rd Qu.:57.00                3rd Qu.:30.36   3rd Qu.: 2390.3  
+ Max.   :20460   Max.   :70.00                Max.   :61.83   Max.   :11155.7  
+                                              NA's   :356                      
+    protein             cho               fat         
+ Min.   :  3.915   Min.   :  25.01   Min.   :  1.317  
+ 1st Qu.: 54.092   1st Qu.: 152.26   1st Qu.: 43.611  
+ Median : 74.793   Median : 210.71   Median : 64.878  
+ Mean   : 83.182   Mean   : 229.71   Mean   : 73.806  
+ 3rd Qu.:102.048   3rd Qu.: 288.48   3rd Qu.: 91.824  
+ Max.   :361.825   Max.   :1249.47   Max.   :534.565  
+                                                      </code></pre>
+</div>
+</div>
+<ul>
+<li>missing values are represented with NA</li>
+<li>variables with missing: bmi</li>
+</ul>
+</section>
+</section>
+<section id="our-question" class="level1">
+<h1>2. Our question</h1>
+<p>Mock question of interest: <strong>is energy intake associated with with fat intake?</strong></p>
+<ul>
+<li>Dependent: energy intake</li>
+<li>Main predictor: fat intake</li>
+<li>Covariates of interest: age, sex, bmi</li>
+<li>Auxiliary variables:
+<ul>
+<li>Variables that are either correlated with missing variable (r &gt; 0.4) or believed to be associated with missingness. <em>Use your knowledge!</em></li>
+<li>To increase power and/or help make the assumption of MAR more plausible</li>
+<li>protein, cho</li>
+</ul></li>
+</ul>
+</section>
+<section id="explore-pattern-of-missingness" class="level1">
+<h1>3. Explore pattern of missingness</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>explanatory <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"protein"</span>, <span class="st">"age"</span>, <span class="st">"sex"</span>, <span class="st">"bmi"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dependent <span class="ot">=</span> <span class="st">"energy"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># look for patterns of missingness</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>MD <span class="sc">%&gt;%</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a> <span class="fu">missing_pattern</span>(dependent, explanatory)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="2_multiple_imputation_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    age sex energy protein bmi    
+644   1   1      1       1   1   0
+356   1   1      1       1   0   1
+      0   0      0       0 356 356</code></pre>
+</div>
+</div>
+<ul>
+<li>there are two pattern of missingness</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># explore pattern of missingness</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>MD <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">missing_pairs</span>(dependent, explanatory, <span class="at">position =</span> <span class="st">"fill"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 356 rows containing non-finite values (`stat_boxplot()`).
+Removed 356 rows containing non-finite values (`stat_boxplot()`).
+Removed 356 rows containing non-finite values (`stat_boxplot()`).
+Removed 356 rows containing non-finite values (`stat_boxplot()`).
+Removed 356 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="2_multiple_imputation_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li>pattern of missingness
+<ul>
+<li><em>blue</em>: observed values</li>
+<li><em>grey</em>: missing values</li>
+<li>the distribution of observed and missing BMI can be visually compared</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare not missing vs. missing </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>explatory_compare <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"protein"</span>, <span class="st">"age"</span>, <span class="st">"sex"</span>, <span class="st">"energy"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>dependent_compare <span class="ot">=</span> <span class="st">"bmi"</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>MD <span class="sc">%&gt;%</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">missing_compare</span>(dependent_compare, explatory_compare) <span class="sc">%&gt;%</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">row.names=</span><span class="cn">FALSE</span>, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">"l"</span>, <span class="st">"l"</span>, <span class="st">"r"</span>, <span class="st">"r"</span>, <span class="st">"r"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 49%">
+<col style="width: 10%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Missing data analysis: Body mass index, kg/m2</th>
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Not missing</th>
+<th style="text-align: right;">Missing</th>
+<th style="text-align: right;">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Protein intake, g/d</td>
+<td style="text-align: left;">Mean (SD)</td>
+<td style="text-align: right;">85.3 (41.8)</td>
+<td style="text-align: right;">79.4 (47.6)</td>
+<td style="text-align: right;">0.045</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Age, years</td>
+<td style="text-align: left;">Mean (SD)</td>
+<td style="text-align: right;">45.0 (14.4)</td>
+<td style="text-align: right;">46.4 (13.5)</td>
+<td style="text-align: right;">0.129</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sex</td>
+<td style="text-align: left;">Male</td>
+<td style="text-align: right;">320 (64.3)</td>
+<td style="text-align: right;">178 (35.7)</td>
+<td style="text-align: right;">0.978</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Female</td>
+<td style="text-align: right;">324 (64.5)</td>
+<td style="text-align: right;">178 (35.5)</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Energy intake, kcal/d</td>
+<td style="text-align: left;">Mean (SD)</td>
+<td style="text-align: right;">2012.7 (863.2)</td>
+<td style="text-align: right;">1845.6 (995.9)</td>
+<td style="text-align: right;">0.006</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>difference in estimated protein and energy intake
+<ul>
+<li>does not satisfy MCAR, more likely to be MAR</li>
+<li>would not recommend complete case analysis</li>
+</ul></li>
+</ul>
+</section>
+<section id="deciding-how-to-handle-the-data-multiple-imputation" class="level1">
+<h1>4. deciding how to handle the data: multiple imputation</h1>
+<section id="imputation-phase" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="imputation-phase">4.1 imputation phase</h2>
+<ul>
+<li><em>Dependent</em>: energy intake</li>
+<li><em>Main predictor</em>: fat intake</li>
+<li><em>Covariates of interest</em>: age, sex, bmi</li>
+<li><em>Auxiliary variables</em>: protein, cho</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># impute missing values for all variables using mice package</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># in our case, we would just need to include all variables in MD</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># number of imputation: 10</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>multiple_imputation <span class="ot">=</span> <span class="fu">mice</span>(</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  MD,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">m =</span> <span class="dv">10</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">print =</span> <span class="cn">FALSE</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>note</strong>: mice has many prediction methods including Predictive Mean Matching, Chained Equations, Random Forests, etc. We are using the default Predictive Mean Matching</p>
+</section>
+<section id="analysis-and-pooling-phase" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="analysis-and-pooling-phase">4.2 analysis and pooling phase</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model_fit <span class="ot">&lt;-</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with</span>(multiple_imputation, <span class="fu">lm</span>(energy <span class="sc">~</span> fat <span class="sc">+</span> age <span class="sc">+</span> sex <span class="sc">+</span> bmi))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>base<span class="sc">::</span><span class="fu">summary</span>(mice<span class="sc">::</span><span class="fu">pool</span>(model_fit)) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>   knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">digits=</span><span class="dv">2</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">df</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">921.66</td>
+<td style="text-align: right;">85.49</td>
+<td style="text-align: right;">10.78</td>
+<td style="text-align: right;">378.85</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fat</td>
+<td style="text-align: right;">17.04</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">56.15</td>
+<td style="text-align: right;">992.79</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">-2.53</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">-2.62</td>
+<td style="text-align: right;">983.81</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sexFemale</td>
+<td style="text-align: right;">-164.88</td>
+<td style="text-align: right;">27.89</td>
+<td style="text-align: right;">-5.91</td>
+<td style="text-align: right;">990.49</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">bmi</td>
+<td style="text-align: right;">-1.01</td>
+<td style="text-align: right;">2.52</td>
+<td style="text-align: right;">-0.40</td>
+<td style="text-align: right;">170.54</td>
+<td style="text-align: right;">0.69</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="potential-things-to-think-about" class="level1">
+<h1>5. potential things to think about</h1>
+<ul>
+<li>choose your auxiliary variables carefully! make sure to include all variables that you <strong>think</strong> are associated with or predict missingness!</li>
+<li>number of imputation: Recommendation varies. Rule of thumb:
+<ul>
+<li>5-20 imputations: low fractions of missingness</li>
+<li>as many as 50 or more if needed: high fraction of missingness</li>
+<li>bottom line: coefficient eventually stabilize after certain number of imputation. Can run different time of m to assess stability</li>
+</ul></li>
+<li>about transformed variables: recommend to just treat them as another variable and back transform if necessary</li>
+<li><strong>not covered but need to know</strong>: there are ways to assess imputation quality!</li>
+</ul>
+</section>
+<section id="reference" class="level1">
+<h1>6. Reference</h1>
+<ul>
+<li>Multiple Imputation in SAS. UCLA: Statistical Consulting Group. From https://stats.oarc.ucla.edu/sas/seminars/multiple-imputation-in-sas/mi_new_1/ (accessed April 27, 2023)</li>
+<li>Batra, Neale, et al.&nbsp;The Epidemiologist R Handbook. Chapter 20 Missing Data. 2021.</li>
+<li>Enders, C. K. (2022). Applied Missing Data Analysis. Guilford Publications. https://books.google.ca/books?id=b294EAAAQBAJ</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
