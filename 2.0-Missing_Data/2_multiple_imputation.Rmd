@@ -19,7 +19,7 @@ library(mice) # for multiple imputation
 ```{r}
 load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstration.rdata")
 
-# select a subset of multiple imputation practice
+# select a subset for multiple imputation exercise
 MD <- cchs2015_demonstration %>%
   select(participantid, age, sex, bmi,
          energy, protein, cho, fat)
@@ -34,10 +34,10 @@ summary(MD)
 
 # 2. Our question
 __Mock question of interest__: is energy intake associated with with fat intake?
-- Dependent: energy intake
-- Main predictor: fat intake 
-- Covariates of interest: age, sex, bmi
-- Auxiliary variables: 
+- _Dependent_: energy intake
+- _Main predictor_: fat intake 
+- _Covariates of interest_: age, sex, bmi
+- _Auxiliary variables_: 
     + Variables that are either correlated with missing variable (r > 0.4) or believed to be associated with missingness. _Use your knowledge!_
     + To increase power and/or help make the assumption of MAR more plausible
 - protein, cho
@@ -50,11 +50,20 @@ dependent = "energy"
 # look for patterns of missingness
 MD %>%
  missing_pattern(dependent, explanatory)
+```
+- there are two pattern of missingness
 
+```{r}
 # explore pattern of missingness
 MD %>%
   missing_pairs(dependent, explanatory, position = "fill")
-
+```
+- pattern of missingness
+    + _blue_: observed values
+    + _grey_: missing values
+    + the distribution of observed and missing BMI can be visually compared
+    
+```{r}
 # compare not missing vs. missing 
 explatory_compare = c("protein", "age", "sex", "energy")
 dependent_compare = "bmi"
@@ -62,21 +71,17 @@ MD %>%
   missing_compare(dependent_compare, explatory_compare) %>%
   knitr::kable(row.names=FALSE, align = c("l", "l", "r", "r", "r"))
 ```
-- there are two pattern of missingness
-- pattern of missingness
-    + _blue_: observed values
-    + _grey_: missing values
-    + the distribution of observed and missing BMI can be visually compared
+
 - difference in estimated protein and energy intake
     + does not satisfy MCAR, more likely to be MAR
     + would not recommend complete case analysis
 
 # 4. deciding how to handle the data: multiple imputation
 ## 4.1 imputation phase {.smaller}
-- Dependent: energy intake
-- Main predictor: fat intake 
-- Covariates of interest: age, sex, bmi
-- Auxiliary variables: protein, cho
+- _Dependent_: energy intake
+- _Main predictor_: fat intake 
+- _Covariates of interest_: age, sex, bmi
+- _Auxiliary variables_: protein, cho
 ```{r}
 # impute missing values for all variables using mice package
 # in our case, we would just need to include all variables in MD
@@ -95,14 +100,20 @@ model_fit <- with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
 
 base::summary(mice::pool(model_fit))
 ```
+
 # 5. potential things to think about
-- choose your auxiliary variables carefully! make suer to include all variables that you __think__ are associated with or predict missingness!
+- choose your auxiliary variables carefully! make sure to include all variables that you __think__ are associated with or predict missingness!
 - number of imputation: Recommendation varies. Rule of thumb:
-    + 5-20 imputations: low fractions
-    + as many as 50 or more if needed: high fraction
+    + 5-20 imputations: low fractions of missingness
+    + as many as 50 or more if needed: high fraction of missingness
     + bottom line: coefficient eventually stabilize after certain number of imputation. Can run different time of m to assess stability
-- about transformed variables: recommend to just treat them as another variable and back transform is necessary
+- about transformed variables: recommend to just treat them as another variable and back transform if necessary
 - __not covered but need to know__: there are ways to assess imputation quality!
+
+# 6. Reference
+- Multiple Imputation in SAS. UCLA: Statistical Consulting Group. From https://stats.oarc.ucla.edu/sas/seminars/multiple-imputation-in-sas/mi_new_1/ (accessed April 27, 2023)
+- Batra, Neale, et al. The Epidemiologist R Handbook. Chapter 20 Missing Data. 2021.
+- Enders, C. K. (2022). Applied Missing Data Analysis. Guilford Publications. https://books.google.ca/books?id=b294EAAAQBAJ 
 
 
 

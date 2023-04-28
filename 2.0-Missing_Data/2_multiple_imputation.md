@@ -49,7 +49,7 @@ library(mice) # for multiple imputation
 ``` r
 load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstration.rdata")
 
-# select a subset of multiple imputation practice
+# select a subset for multiple imputation exercise
 MD <- cchs2015_demonstration %>%
   select(participantid, age, sex, bmi,
          energy, protein, cho, fat)
@@ -103,12 +103,12 @@ summary(MD)
 # 2. Our question
 
 **Mock question of interest**: is energy intake associated with with fat
-intake? - Dependent: energy intake - Main predictor: fat intake -
-Covariates of interest: age, sex, bmi - Auxiliary variables: + Variables
-that are either correlated with missing variable (r \> 0.4) or believed
-to be associated with missingness. *Use your knowledge!* + To increase
-power and/or help make the assumption of MAR more plausible - protein,
-cho
+intake? - *Dependent*: energy intake - *Main predictor*: fat intake -
+*Covariates of interest*: age, sex, bmi - *Auxiliary variables*: +
+Variables that are either correlated with missing variable (r \> 0.4) or
+believed to be associated with missingness. *Use your knowledge!* + To
+increase power and/or help make the assumption of MAR more plausible -
+protein, cho
 
 # 3. Explore pattern of missingness
 
@@ -128,6 +128,8 @@ MD %>%
     ## 356   1   1      1       1   0   1
     ##       0   0      0       0 356 356
 
+- there are two pattern of missingness
+
 ``` r
 # explore pattern of missingness
 MD %>%
@@ -140,7 +142,10 @@ MD %>%
     ## Removed 356 rows containing non-finite values (`stat_boxplot()`).
     ## Removed 356 rows containing non-finite values (`stat_boxplot()`).
 
-![](2_multiple_imputation_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+![](2_multiple_imputation_files/figure-gfm/unnamed-chunk-4-1.png)<!-- --> -
+pattern of missingness + *blue*: observed values + *grey*: missing
+values + the distribution of observed and missing BMI can be visually
+compared
 
 ``` r
 # compare not missing vs. missing 
@@ -159,12 +164,6 @@ MD %>%
 |                                               | Female    |     324 (64.5) |     178 (35.5) |       |
 | Energy intake, kcal/d                         | Mean (SD) | 2012.7 (863.2) | 1845.6 (995.9) | 0.006 |
 
-- there are two pattern of missingness
-- pattern of missingness
-  - *blue*: observed values
-  - *grey*: missing values
-  - the distribution of observed and missing BMI can be visually
-    compared
 - difference in estimated protein and energy intake
   - does not satisfy MCAR, more likely to be MAR
   - would not recommend complete case analysis
@@ -173,10 +172,10 @@ MD %>%
 
 ## 4.1 imputation phase
 
-- Dependent: energy intake
-- Main predictor: fat intake
-- Covariates of interest: age, sex, bmi
-- Auxiliary variables: protein, cho
+- *Dependent*: energy intake
+- *Main predictor*: fat intake
+- *Covariates of interest*: age, sex, bmi
+- *Auxiliary variables*: protein, cho
 
 ``` r
 # impute missing values for all variables using mice package
@@ -211,15 +210,25 @@ base::summary(mice::pool(model_fit))
 
 # 5. potential things to think about
 
-- choose your auxiliary variables carefully! make suer to include all
+- choose your auxiliary variables carefully! make sure to include all
   variables that you **think** are associated with or predict
   missingness!
 - number of imputation: Recommendation varies. Rule of thumb:
-  - 5-20 imputations: low fractions
-  - as many as 50 or more if needed: high fraction
+  - 5-20 imputations: low fractions of missingness
+  - as many as 50 or more if needed: high fraction of missingness
   - bottom line: coefficient eventually stabilize after certain number
     of imputation. Can run different time of m to assess stability
 - about transformed variables: recommend to just treat them as another
-  variable and back transform is necessary
+  variable and back transform if necessary
 - **not covered but need to know**: there are ways to assess imputation
   quality!
+
+# 6. Reference
+
+- Multiple Imputation in SAS. UCLA: Statistical Consulting Group. From
+  <https://stats.oarc.ucla.edu/sas/seminars/multiple-imputation-in-sas/mi_new_1/>
+  (accessed April 27, 2023)
+- Batra, Neale, et al. The Epidemiologist R Handbook. Chapter 20 Missing
+  Data. 2021.
+- Enders, C. K. (2022). Applied Missing Data Analysis. Guilford
+  Publications. <https://books.google.ca/books?id=b294EAAAQBAJ>
