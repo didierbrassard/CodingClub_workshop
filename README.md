@@ -26,4 +26,4 @@ Community Health Survey (CCHS) 2015 - Nutrition.
   data](https://didierbrassard.github.io/CodingClub_workshop/data/metadata/Codebook-maker.html)
 - [Part 1. Marginal effects: getting insights from a
   model](https://didierbrassard.github.io/CodingClub_workshop/1.1-Marginal_effects.html#/title-slide)
-- Part 2. Multiple imputation to deal with missingness: [slides](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/MIssing_Data_slides.pptx) | [code](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/2_multiple_imputation.md)
+- Part 2. Multiple imputation to deal with missingness: [slides](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/MIssing_Data_slides.pptx) | [code](hhttps://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/2_multiple_imputation.md)
