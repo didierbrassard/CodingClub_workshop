@@ -1,9 +1,8 @@
 ---
-title: "R Notebook"
+title: "Part 2: Multiple Imputation"
 author: "Hannah Han"
 output:
-  github_document:
-    df_print: paged
+  html_document
 ---
 
 # 1. Preparation
@@ -17,9 +16,10 @@ library(mice) # for multiple imputation
 ```
 ## Load demo data (if needed need) {.smaller}
 ```{r}
-load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstration.rdata")
-
 # select a subset for multiple imputation exercise
+load( here::here("data", "processed", "cchs2015_demonstration.rdata"))
+  
+# select a subset of multiple imputation practice
 MD <- cchs2015_demonstration %>%
   select(participantid, age, sex, bmi,
          energy, protein, cho, fat)
@@ -29,18 +29,20 @@ str(MD)
 summary(MD)
 
 ```
-* missing values are represented with NA
-* variables with missing: bmi
+- missing values are represented with NA
+- variables with missing: bmi
 
 # 2. Our question
-__Mock question of interest__: is energy intake associated with with fat intake?
-- _Dependent_: energy intake
-- _Main predictor_: fat intake 
-- _Covariates of interest_: age, sex, bmi
-- _Auxiliary variables_: 
+
+Mock question of interest: __is energy intake associated with with fat intake?__
+
+- Dependent: energy intake
+- Main predictor: fat intake 
+- Covariates of interest: age, sex, bmi
+- Auxiliary variables: 
     + Variables that are either correlated with missing variable (r > 0.4) or believed to be associated with missingness. _Use your knowledge!_
     + To increase power and/or help make the assumption of MAR more plausible
-- protein, cho
+    + protein, cho
 
 # 3. Explore pattern of missingness
 ```{r}
@@ -96,9 +98,15 @@ __note__: mice has many prediction methods including Predictive Mean Matching, C
 
 ## 4.2 analysis and pooling phase {.smaller}
 ```{r}
-model_fit <- with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
+model_fit <-
+  with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))
 
-base::summary(mice::pool(model_fit))
+base::summary(mice::pool(model_fit)) %>% 
+  tibble::as_tibble() |>
+   knitr::kable(
+     digits=2
+   )
+
 ```
 
 # 5. potential things to think about
@@ -114,7 +122,6 @@ base::summary(mice::pool(model_fit))
 - Multiple Imputation in SAS. UCLA: Statistical Consulting Group. From https://stats.oarc.ucla.edu/sas/seminars/multiple-imputation-in-sas/mi_new_1/ (accessed April 27, 2023)
 - Batra, Neale, et al. The Epidemiologist R Handbook. Chapter 20 Missing Data. 2021.
 - Enders, C. K. (2022). Applied Missing Data Analysis. Guilford Publications. https://books.google.ca/books?id=b294EAAAQBAJ 
-
 
 
 
