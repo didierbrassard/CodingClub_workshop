@@ -51,7 +51,6 @@ library(mice) # for multiple imputation
 load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstration.rdata")
 
 # select a subset for multiple imputation exercise
-=======
 load( here::here("data", "processed", "cchs2015_demonstration.rdata"))
   
 # select a subset of multiple imputation practice
@@ -112,7 +111,7 @@ intake?
 - Dependent: energy intake 
 - Main predictor: fat intake 
 - Covariates of interest: age, sex, bmi 
-- Auxiliary variables*: 
+- Auxiliary variables: 
   - Variables that are either correlated with missing variable (r \> 0.4) or
 believed to be associated with missingness. *Use your knowledge!
   - To increase power and/or help make the assumption of MAR more plausible
