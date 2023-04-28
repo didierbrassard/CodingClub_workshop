@@ -47,7 +47,7 @@ library(mice) # for multiple imputation
 ## Load demo data (if needed need)
 
 ``` r
-<<<<<<< HEAD
+
 load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstration.rdata")
 
 # select a subset for multiple imputation exercise
@@ -109,14 +109,14 @@ summary(MD)
 
 Mock question of interest: is energy intake associated with with fat
 intake? 
-Dependent: energy intake 
-Main predictor: fat intake 
-Covariates of interest: age, sex, bmi 
-Auxiliary variables*: 
-- Variables that are either correlated with missing variable (r \> 0.4) or
+- Dependent: energy intake 
+- Main predictor: fat intake 
+- Covariates of interest: age, sex, bmi 
+- Auxiliary variables*: 
+  - Variables that are either correlated with missing variable (r \> 0.4) or
 believed to be associated with missingness. *Use your knowledge!
-- To increase power and/or help make the assumption of MAR more plausible
-- protein, cho
+  - To increase power and/or help make the assumption of MAR more plausible
+  - protein, cho
 
 
 # 3. Explore pattern of missingness
@@ -151,9 +151,11 @@ MD %>%
     ## Removed 356 rows containing non-finite values (`stat_boxplot()`).
     ## Removed 356 rows containing non-finite values (`stat_boxplot()`).
 
-![](2_multiple_imputation_files/figure-gfm/unnamed-chunk-4-1.png)<!-- --> -
-pattern of missingness + *blue*: observed values + *grey*: missing
-values + the distribution of observed and missing BMI can be visually
+![](2_multiple_imputation_files/figure-gfm/unnamed-chunk-4-1.png)<!-- --> 
+pattern of missingness 
+- *blue*: observed values 
+- *grey*: missing values 
+- the distribution of observed and missing BMI can be visually
 compared
 
 ``` r
