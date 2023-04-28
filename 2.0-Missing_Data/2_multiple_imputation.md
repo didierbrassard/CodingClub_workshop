@@ -55,7 +55,6 @@ load("~/Documents/GitHub/CodingClub_workshop/data/processed/cchs2015_demonstrati
 load( here::here("data", "processed", "cchs2015_demonstration.rdata"))
   
 # select a subset of multiple imputation practice
->>>>>>> 3de5369350aaeb5b6b2833a507ccc980e1030d78
 MD <- cchs2015_demonstration %>%
   select(participantid, age, sex, bmi,
          energy, protein, cho, fat)
@@ -108,14 +107,15 @@ summary(MD)
 
 # 2. Our question
 
-**Mock question of interest**: is energy intake associated with with fat
-<<<<<<< HEAD
-intake? - *Dependent*: energy intake - *Main predictor*: fat intake -
-*Covariates of interest*: age, sex, bmi - *Auxiliary variables*: +
-Variables that are either correlated with missing variable (r \> 0.4) or
-believed to be associated with missingness. *Use your knowledge!* + To
-increase power and/or help make the assumption of MAR more plausible -
-protein, cho
+Mock question of interest: is energy intake associated with with fat
+intake? 
+Dependent: energy intake - *Main predictor*: fat intake 
+Covariates of interest*: age, sex, bmi 
+Auxiliary variables*: 
+- Variables that are either correlated with missing variable (r \> 0.4) or
+believed to be associated with missingness. *Use your knowledge!
+- To increase power and/or help make the assumption of MAR more plausible
+- protein, cho
 =======
 intake?
 
@@ -129,7 +129,6 @@ intake?
   - To increase power and/or help make the assumption of MAR more
     plausible
 - protein, cho
->>>>>>> 3de5369350aaeb5b6b2833a507ccc980e1030d78
 
 # 3. Explore pattern of missingness
 
