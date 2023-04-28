@@ -490,6 +490,211 @@ marginaleffects::avg_comparisons(lm2,
 
 [More examples available online](https://vincentarelbundock.github.io/marginaleffects/articles/comparisons.html)
 
+## Example 2: more complex model {.smaller}
+
+::: columns
+::: {.column width="60%"}
+For causal inference purpose, we wish to estimate the risk of hypertension across the range of sodium intakes.
+
+::: fragment
+**Model (estimator)**: $\text{logit}(\pi)=\beta_0+\beta_\text{Na}\text{Na}+\gamma Z$
+:::
+:::
+
+::: {.column width="40%"}
+```{r img-bp, echo=FALSE}
+#| fig-align: "center"
+
+knitr::include_graphics(here::here("misc","img-bp.jpg"))
+
+```
+:::
+:::
+
+## Hypothesized relationship {.smaller}
+
+Assume temporality and that this causal directed acyclic graph (DAG) is correct:
+
+::: columns
+::: {.column width="60%"}
+
+```{r dag, echo=FALSE}
+#| fig-align: "center"
+#| fig-dpi: 300
+
+library(dagitty)
+library(ggdag)
+library(ggplot2)
+library(dplyr)
+
+# ********************************************** #
+#               Input Dagitty DAG                #
+# ********************************************** #
+
+dag <-
+  dagitty::dagitty('dag {
+                    bb="0,0,1,1"
+                    Na [exposure,pos="0.300,0.2500"]
+                    HBP [outcome,pos="0.600,0.2500"]
+                    U [latent,pos="0.300,0.50"]
+                    Z1 [pos="0.450,0.375"]
+                    Z2 [pos="0.600,0.50"]
+                    Na -> HBP
+                    U -> Na
+                    U -> Z2
+                    Z1 -> Na
+                    Z1 -> HBP
+                    Z1 -> U
+                    Z1 -> Z2
+                    Z2 -> HBP
+                    }' ) |> 
+  ggdag::tidy_dagitty() |> 
+  dplyr::mutate(
+    name_colour=ifelse(name=="Z1"|name=="Z2",
+                       MetBrewer::met.brewer("Juarez",n=1),"black"),
+    name_colour=ifelse(name=="U",
+                       MetBrewer::met.brewer("Juarez",n=1),name_colour)
+  )
+
+dag_ <-
+  tibble::as_tibble(dag) %>% 
+  dplyr::mutate(
+    label = case_when(
+    name =="Na"~ "Na",
+    name =="U" ~ "U",
+    name =="Z1" ~ "Z\u2081",
+    name =="Z2" ~ "Z\u2082",
+    name =="HBP" ~ "HBP" )
+  ) %>% 
+  dplyr::select(label)
+
+# ********************************************** #
+#            Generate DAG with ggplot            #
+# ********************************************** #
+
+name_colour <- 
+  c("U" = "grey",
+    "Na" = "black",
+    "HBP" = "black",
+    "Z1" = MetBrewer::met.brewer("Juarez",n=1),
+    "Z2" = MetBrewer::met.brewer("Juarez",n=1)
+  )
+
+dag_plot <-
+  dag  |>
+  ggplot(aes(
+    x = x,
+    y = y,
+    xend = xend,
+    yend = yend
+  )) +
+  geom_dag_point(aes(colour = name),show.legend=FALSE) +
+  geom_dag_edges(aes(edge_colour=name_colour)) +
+  scale_colour_manual(values=name_colour) +
+  geom_dag_text(aes(label=dag_$label)) +
+  theme_dag()
+
+# ********************************************** #
+#              Save for further use              #
+# ********************************************** #
+
+  # ggplot2::ggsave(here::here("misc","dag-ex2.pdf"),
+  #       plot=dag_plot, dpi=300, width=4,height=3, units="in",scale=1.15,device = cairo_pdf)
+
+  ggplot2::ggsave(here::here("misc","dag-ex2.png"),
+         plot=dag_plot, dpi=300, width=4,height=3, units="in",scale=1.1)
+
+knitr::include_graphics(here::here("misc","dag-ex2.png"))
+
+```
+
+:::
+::: {.column width="40%"}
+-   $\text{Na}$ sodium intake (mg)
+-   $\text{HBP}$ High blood pressure
+-   $U$ (unobserved) propensity towards health-seeking behaviors
+-   $Z_1$ age, sex, university education level
+-   $Z_2$ smoking, moderate/intense physical activity
+:::
+:::
+
+## Prepare data {.smaller}
+
+Combine variables to avoid over-fitting, i.e., limiting sample size = `r table(final$self_reported_bp)[2]` events [@Harrell2015].
+
+```{r recoding}
+# recode categorical covariates
+final <- 
+  final |>
+  dplyr::mutate(
+    # education: university vs. else
+    edu_4 = ifelse(education==4,1,0),
+    # smoking: daily or occasional smoker vs. else
+    smk_1 = ifelse(smoking %in% c(1,2),1,0)
+  )
+
+# confirm recoding
+with(final,table(edu_4,education))
+with(final,table(smk_1,smoking))
+
+```
+
+## Logistic regression model {.smaller}
+
+```{r}
+
+logm1 <-
+  glm(self_reported_bp ~ rms::rcs(sodium,3) + rms::rcs(age,3) + female + 
+          edu_4 + smk_1 + rms::rcs(phys_act_mod,3),
+      binomial(link = "logit"),
+      data = final )
+
+logm1
+
+```
+
+
+```{r eval=FALSE, include=FALSE}
+
+## Logistic regression model {.smaller}
+SAS equivalent
+
+proc logistic data=final_recoded ;
+effect spl_sodium = spline( sodium / details naturalcubic basis=tpf(noint) 
+	knotmethod=percentilelist(10 50 90));
+effect spl_age = spline( age / details naturalcubic basis=tpf(noint) 
+	knotmethod=percentilelist(10 50 90));
+effect spl_phys_act_mod = spline( phys_act_mod / details naturalcubic basis=tpf(noint) 
+	knotmethod=percentilelist(10 50 90));
+model self_reported_bp(event='1') = spl_sodium spl_age female
+  edu_4 smk_1 spl_phys_act_mod ;
+store logm1;
+run;
+
+```
+
+:::
+
+## Model visualization at mean values {.smaller}
+
+```{r log-model-viz}
+#| fig-align: "center"
+#| code-line-numbers: "1"
+marginaleffects::plot_predictions(model = logm1, condition =c("sodium"),
+                                  draw=TRUE) +
+# Limit axis to remove extreme values 
+ggplot2::coord_cartesian(xlim=c(quantile(final$sodium,0.01),
+                                quantile(final$sodium,0.99))) +
+# Add labels
+ggplot2::labs(title    = "Pr(High blood pressure | sodium, Z)",
+              subtitle = "Curve at mean values",
+              x = "Sodium intake, mg",
+              y = "Probability of high blood pressure") +
+ggplot2::theme_bw() 
+
+```
+
+
 # Conclusion
 
 -   Don't stop at standard output regression model
@@ -500,3 +705,4 @@ marginaleffects::avg_comparisons(lm2,
     - SAS: option `estimate` + `ods output <...>;`
 
 # References {.smaller}
+
