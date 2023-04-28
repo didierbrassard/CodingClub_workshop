@@ -1,5 +1,40 @@
 [
   {
+    "objectID": "2.0-Missing_Data/2_multiple_imputation.html",
+    "href": "2.0-Missing_Data/2_multiple_imputation.html",
+    "title": "Part 2: Multiple Imputation",
+    "section": "",
+    "text": "#setwd(\"/Users/hannah/Documents/GitHub/CodingClub_workshop/2.0-Missing_Data\")\n# install.packages(c(\"GGally\", \"mice\", \"tidyverse\", \"finalfit\"))\nlibrary(tidyverse) # for data wraggling\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.2     ✔ readr     2.1.4\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.4.2     ✔ tibble    3.2.1\n✔ lubridate 1.9.2     ✔ tidyr     1.3.0\n✔ purrr     1.0.1     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(finalfit) # great package to handle missing data\nlibrary(GGally) # for visualizing missing pattern\n\nRegistered S3 method overwritten by 'GGally':\n  method from   \n  +.gg   ggplot2\n\nlibrary(mice) # for multiple imputation\n\n\nAttaching package: 'mice'\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nThe following objects are masked from 'package:base':\n\n    cbind, rbind\n\n\n\n\n\n\n# select a subset for multiple imputation exercise\nload( here::here(\"data\", \"processed\", \"cchs2015_demonstration.rdata\"))\n  \n# select a subset of multiple imputation practice\nMD &lt;- cchs2015_demonstration %&gt;%\n  select(participantid, age, sex, bmi,\n         energy, protein, cho, fat)\n\n# view MD subset\nstr(MD)\n\ntibble [1,000 × 8] (S3: tbl_df/tbl/data.frame)\n $ participantid: num [1:1000] 9261 1881 16071 18893 1420 ...\n  ..- attr(*, \"label\")= chr \"Unique identifier\"\n $ age          : num [1:1000] 20 56 35 33 49 27 35 46 55 50 ...\n  ..- attr(*, \"label\")= chr \"Age, years\"\n $ sex          : Factor w/ 2 levels \"Male\",\"Female\": 1 1 2 2 2 2 1 1 2 2 ...\n  ..- attr(*, \"label\")= chr \"Sex\"\n $ bmi          : num [1:1000] NA 28.1 19.8 NA 22.5 ...\n  ..- attr(*, \"label\")= chr \"Body mass index, kg/m2\"\n $ energy       : num [1:1000] 3157 1133 1879 1382 2148 ...\n  ..- attr(*, \"label\")= chr \"Energy intake, kcal/d\"\n $ protein      : num [1:1000] 114.7 34.6 78.2 28.9 74.3 ...\n  ..- attr(*, \"label\")= chr \"Protein intake, g/d\"\n $ cho          : num [1:1000] 291 203 137 126 321 ...\n  ..- attr(*, \"label\")= chr \"Carbohydrate intake, g/d\"\n $ fat          : num [1:1000] 161.8 23.7 115.7 78 66.5 ...\n  ..- attr(*, \"label\")= chr \"Fat intake, g/d\"\n\nsummary(MD)\n\n participantid        age            sex           bmi            energy       \n Min.   :   76   Min.   :19.00   Male  :498   Min.   :16.27   Min.   :  209.5  \n 1st Qu.: 5111   1st Qu.:34.00   Female:502   1st Qu.:23.45   1st Qu.: 1348.3  \n Median :10126   Median :46.00                Median :26.66   Median : 1796.2  \n Mean   :10071   Mean   :45.53                Mean   :27.55   Mean   : 1953.2  \n 3rd Qu.:14897   3rd Qu.:57.00                3rd Qu.:30.36   3rd Qu.: 2390.3  \n Max.   :20460   Max.   :70.00                Max.   :61.83   Max.   :11155.7  \n                                              NA's   :356                      \n    protein             cho               fat         \n Min.   :  3.915   Min.   :  25.01   Min.   :  1.317  \n 1st Qu.: 54.092   1st Qu.: 152.26   1st Qu.: 43.611  \n Median : 74.793   Median : 210.71   Median : 64.878  \n Mean   : 83.182   Mean   : 229.71   Mean   : 73.806  \n 3rd Qu.:102.048   3rd Qu.: 288.48   3rd Qu.: 91.824  \n Max.   :361.825   Max.   :1249.47   Max.   :534.565  \n                                                      \n\n\n\nmissing values are represented with NA\nvariables with missing: bmi"
+  },
+  {
+    "objectID": "2.0-Missing_Data/2_multiple_imputation.html#import-pacakges",
+    "href": "2.0-Missing_Data/2_multiple_imputation.html#import-pacakges",
+    "title": "Part 2: Multiple Imputation",
+    "section": "",
+    "text": "#setwd(\"/Users/hannah/Documents/GitHub/CodingClub_workshop/2.0-Missing_Data\")\n# install.packages(c(\"GGally\", \"mice\", \"tidyverse\", \"finalfit\"))\nlibrary(tidyverse) # for data wraggling\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.2     ✔ readr     2.1.4\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.4.2     ✔ tibble    3.2.1\n✔ lubridate 1.9.2     ✔ tidyr     1.3.0\n✔ purrr     1.0.1     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(finalfit) # great package to handle missing data\nlibrary(GGally) # for visualizing missing pattern\n\nRegistered S3 method overwritten by 'GGally':\n  method from   \n  +.gg   ggplot2\n\nlibrary(mice) # for multiple imputation\n\n\nAttaching package: 'mice'\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nThe following objects are masked from 'package:base':\n\n    cbind, rbind"
+  },
+  {
+    "objectID": "2.0-Missing_Data/2_multiple_imputation.html#load-demo-data-if-needed-need",
+    "href": "2.0-Missing_Data/2_multiple_imputation.html#load-demo-data-if-needed-need",
+    "title": "Part 2: Multiple Imputation",
+    "section": "",
+    "text": "# select a subset for multiple imputation exercise\nload( here::here(\"data\", \"processed\", \"cchs2015_demonstration.rdata\"))\n  \n# select a subset of multiple imputation practice\nMD &lt;- cchs2015_demonstration %&gt;%\n  select(participantid, age, sex, bmi,\n         energy, protein, cho, fat)\n\n# view MD subset\nstr(MD)\n\ntibble [1,000 × 8] (S3: tbl_df/tbl/data.frame)\n $ participantid: num [1:1000] 9261 1881 16071 18893 1420 ...\n  ..- attr(*, \"label\")= chr \"Unique identifier\"\n $ age          : num [1:1000] 20 56 35 33 49 27 35 46 55 50 ...\n  ..- attr(*, \"label\")= chr \"Age, years\"\n $ sex          : Factor w/ 2 levels \"Male\",\"Female\": 1 1 2 2 2 2 1 1 2 2 ...\n  ..- attr(*, \"label\")= chr \"Sex\"\n $ bmi          : num [1:1000] NA 28.1 19.8 NA 22.5 ...\n  ..- attr(*, \"label\")= chr \"Body mass index, kg/m2\"\n $ energy       : num [1:1000] 3157 1133 1879 1382 2148 ...\n  ..- attr(*, \"label\")= chr \"Energy intake, kcal/d\"\n $ protein      : num [1:1000] 114.7 34.6 78.2 28.9 74.3 ...\n  ..- attr(*, \"label\")= chr \"Protein intake, g/d\"\n $ cho          : num [1:1000] 291 203 137 126 321 ...\n  ..- attr(*, \"label\")= chr \"Carbohydrate intake, g/d\"\n $ fat          : num [1:1000] 161.8 23.7 115.7 78 66.5 ...\n  ..- attr(*, \"label\")= chr \"Fat intake, g/d\"\n\nsummary(MD)\n\n participantid        age            sex           bmi            energy       \n Min.   :   76   Min.   :19.00   Male  :498   Min.   :16.27   Min.   :  209.5  \n 1st Qu.: 5111   1st Qu.:34.00   Female:502   1st Qu.:23.45   1st Qu.: 1348.3  \n Median :10126   Median :46.00                Median :26.66   Median : 1796.2  \n Mean   :10071   Mean   :45.53                Mean   :27.55   Mean   : 1953.2  \n 3rd Qu.:14897   3rd Qu.:57.00                3rd Qu.:30.36   3rd Qu.: 2390.3  \n Max.   :20460   Max.   :70.00                Max.   :61.83   Max.   :11155.7  \n                                              NA's   :356                      \n    protein             cho               fat         \n Min.   :  3.915   Min.   :  25.01   Min.   :  1.317  \n 1st Qu.: 54.092   1st Qu.: 152.26   1st Qu.: 43.611  \n Median : 74.793   Median : 210.71   Median : 64.878  \n Mean   : 83.182   Mean   : 229.71   Mean   : 73.806  \n 3rd Qu.:102.048   3rd Qu.: 288.48   3rd Qu.: 91.824  \n Max.   :361.825   Max.   :1249.47   Max.   :534.565  \n                                                      \n\n\n\nmissing values are represented with NA\nvariables with missing: bmi"
+  },
+  {
+    "objectID": "2.0-Missing_Data/2_multiple_imputation.html#imputation-phase",
+    "href": "2.0-Missing_Data/2_multiple_imputation.html#imputation-phase",
+    "title": "Part 2: Multiple Imputation",
+    "section": "4.1 imputation phase",
+    "text": "4.1 imputation phase\n\nDependent: energy intake\nMain predictor: fat intake\nCovariates of interest: age, sex, bmi\nAuxiliary variables: protein, cho\n\n\n# impute missing values for all variables using mice package\n# in our case, we would just need to include all variables in MD\n# number of imputation: 10\nmultiple_imputation = mice(\n  MD,\n  seed = 123,\n  m = 10,\n  print = FALSE) \n\nnote: mice has many prediction methods including Predictive Mean Matching, Chained Equations, Random Forests, etc. We are using the default Predictive Mean Matching"
+  },
+  {
+    "objectID": "2.0-Missing_Data/2_multiple_imputation.html#analysis-and-pooling-phase",
+    "href": "2.0-Missing_Data/2_multiple_imputation.html#analysis-and-pooling-phase",
+    "title": "Part 2: Multiple Imputation",
+    "section": "4.2 analysis and pooling phase",
+    "text": "4.2 analysis and pooling phase\n\nmodel_fit &lt;-\n  with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))\n\nbase::summary(mice::pool(model_fit)) %&gt;% \n  tibble::as_tibble() |&gt;\n   knitr::kable(\n     digits=2\n   )\n\n\n\n\nterm\nestimate\nstd.error\nstatistic\ndf\np.value\n\n\n\n\n(Intercept)\n921.66\n85.49\n10.78\n378.85\n0.00\n\n\nfat\n17.04\n0.30\n56.15\n992.79\n0.00\n\n\nage\n-2.53\n0.97\n-2.62\n983.81\n0.01\n\n\nsexFemale\n-164.88\n27.89\n-5.91\n990.49\n0.00\n\n\nbmi\n-1.01\n2.52\n-0.40\n170.54\n0.69"
+  },
+  {
     "objectID": "1.0-Regression_intro.html",
     "href": "1.0-Regression_intro.html",
     "title": "Regression workshop: introduction",
@@ -49,6 +84,13 @@
     "text": "Simple logistic regression\nThe probability of a binary \\(Y\\) given \\(X\\), \\(Pr(Y|X)\\), is:\n\\[\\text{logit}(\\pi)=\\beta_0+\\beta_XX_i\\]\n\\[\\text{with logit}(\\pi)=log(\\frac{Y}{1-Y})\\]\nwhich reads as: the probability of the binary outcome \\(Y\\) (denoted as \\(\\pi\\)) equals to a constant \\(\\beta_0\\) (model intercept) plus the value of \\(X\\) for the \\(i\\)th individual multiplied by the regression coefficient \\(\\beta_X\\) on the natural logarithm scale.\nNote: statistical softwares automatically transform data as long as the distribution family (i.e., binomial) and link (i.e., logit) are specified and the outcome \\(Y\\) is indeed a binary outcome.\nSince the outcome is log-transformed with the “logit” link function, the regression coefficient \\(\\beta_X\\) indicates the change in \\(\\text{logit}(\\pi)\\) on the log-scale for a 1-unit increase in \\(X\\). Typically, the value of the coefficient on the log scale is harder to interpret and the coefficient is exponentiated \\(e^{\\beta_x}\\). \\(e^{\\beta_x}\\) then equals to the odds ratio, which indicates the (multiplicative) change of the odds of outcome for a 1-unit increase in \\(X\\). Statistical software often provides convenient options to automatically calculate odds ratios, risk ratios or probability."
   },
   {
+    "objectID": "1.0-Regression_intro.html#multiple-logistic-regression",
+    "href": "1.0-Regression_intro.html#multiple-logistic-regression",
+    "title": "Regression workshop: introduction",
+    "section": "Multiple logistic regression",
+    "text": "Multiple logistic regression\nSimilar to multiple linear regression, the probability of a binary \\(Y\\) given \\(X\\) and \\(Z\\), \\(Pr(Y|X, Z)\\), is:\n\\[\\text{logit}(\\pi)=\\beta_0+\\beta_XX_i+\\gamma Z_i\\]\n\\[\\text{with logit}(\\pi)=log(\\frac{Y}{1-Y})\\]\n\\(Z_i\\) in the equation above could be a vector of covariates (i.e., more than one additional independent variable). \\(\\gamma\\) represents a vector of regression coefficients. \\(Z\\) is used instead of \\(X\\) to explicitly differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex)."
+  },
+  {
     "objectID": "1.0-Regression_intro.html#linear-regression",
     "href": "1.0-Regression_intro.html#linear-regression",
     "title": "Regression workshop: introduction",
@@ -77,6 +119,13 @@
     "text": "Dataset name: Demonstration data based on the CCHS 2015 - Nutrition\nSample of 1,000 respondents aged 19-70 y selected proportionally to sampling weights from the CCHS 2015 - Nutrition (PUMF)\n\n\nMetadata for search engines\n\n\nTemporal Coverage: 2015\nSpatial Coverage: Canada\nCitation: Adapted from Statistics Canada, Canadian Community Health Survey - Nutrition: Public Use Microdata File, 2015, April 2023. This does not constitute an endorsement by Statistics Canada of this product.\nURL: https://www150.statcan.gc.ca/n1/en/catalogue/82M0024X2018001\nDate published: 2018-12-21\n\n\n\n\n\n\n\n\n\n\n\nx\n\n\n\n\nparticipantid\n\n\nr24_season\n\n\nr24_weekend\n\n\nr24_nfoods\n\n\nprovince\n\n\nage\n\n\nsex\n\n\ndrig\n\n\neducation\n\n\nincome\n\n\nmarital_status\n\n\nsmoking\n\n\nphys_act_mod\n\n\nfood_security\n\n\nbodyweight\n\n\nheight\n\n\nbmi\n\n\nself_rated_health\n\n\nself_reported_bp\n\n\nself_reported_db\n\n\nself_reported_chd\n\n\nself_reported_cancer\n\n\nself_reported_osteo\n\n\nfoodwgt\n\n\nenergy\n\n\nsodium\n\n\nfat\n\n\nsfa\n\n\nmufa\n\n\npufa\n\n\ncho\n\n\nfibers\n\n\nprotein\n\n\nroh_g\n\n\ncalcium\n\n\nvit_d\n\n\ncalcium_supp\n\n\nvit_d_supp\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n#Variables\n\n\n\n\nUnique identifier\n\n\n\n\n\n\n\nDistribution of values for participantid\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nparticipantid\nUnique identifier\nnumeric\n0\n1\n76\n10126\n20460\n10070.82\n5814.581\n▇▇▇▇▇\n\n\n\n\n\n\n\n\n\nSeason (24-h dietary recall)\n\n\n\n\n\n\n\nDistribution of values for r24_season\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nn_unique\nempty\nmin\nmax\nwhitespace\n\n\n\n\nr24_season\nSeason (24-h dietary recall)\ncharacter\n0\n1\n4\n0\n4\n6\n0\n\n\n\n\n\n\n\n\n\nWeekend (24-h dietary recall)\n\n\n\n\n\n\n\nDistribution of values for r24_weekend\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nr24_weekend\nWeekend (24-h dietary recall)\nhaven_labelled\n0\n1\n0\n0\n1\n0.444\n0.4971027\n2\n▇▁▁▁▁▁▁▆\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nWeekday\n0\n\n\nWeekend\n1\n\n\n\n\n\n\n\n\n\nNumber of items reported (24-h dietary recall)\n\n\n\n\n\n\n\nDistribution of values for r24_nfoods\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nr24_nfoods\nNumber of items reported (24-h dietary recall)\nnumeric\n0\n1\n2\n15\n38\n15.458\n5.332417\n▂▇▅▁▁\n\n\n\n\n\n\n\n\n\nProvince of residence\n\n\n\n\n\n\n\nDistribution of values for province\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nordered\nvalue_labels\nn_missing\ncomplete_rate\nn_unique\ntop_counts\n\n\n\n\nprovince\nProvince of residence\nfactor\nFALSE\n1. Newfoundland and Labrador,2. Prince Edward Island,3. Nova Scotia,4. New Brunswick,5. Quebec,6. Ontario,7. Manitoba,8. Saskatchewan,9. Alberta,10. British Columbia\n0\n1\n10\nOnt: 382, Que: 216, Bri: 147, Alb: 133\n\n\n\n\n\n\n\n\n\nAge, years\n\n\n\n\n\n\n\nDistribution of values for age\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nage\nAge, years\nnumeric\n0\n1\n19\n46\n70\n45.531\n14.09936\n▆▇▇▇▇\n\n\n\n\n\n\n\n\n\nSex\n\n\n\n\n\n\n\nDistribution of values for sex\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nordered\nvalue_labels\nn_missing\ncomplete_rate\nn_unique\ntop_counts\n\n\n\n\nsex\nSex\nfactor\nFALSE\n1. Male,2. Female\n0\n1\n2\nFem: 502, Mal: 498\n\n\n\n\n\n\n\n\n\nDietary Reference Intake age/sex group\n\n\n\n\n\n\n\nDistribution of values for drig\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\ndrig\nDietary Reference Intake age/sex group\nhaven_labelled\n0\n1\n8\n11\n13\n10.96\n1.543627\n6\n▃▃▁▇▇▁▇▇\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nMale, 19 to 30 y\n8\n\n\nFemale, 19 to 30 y\n9\n\n\nMale, 31 to 50 y\n10\n\n\nFemale, 31 to 50 y\n11\n\n\nMale, 51 to 70 y\n12\n\n\nFemale, 51 to 70 y\n13\n\n\n\n\n\n\n\n\n\nEducation level\n\n\n\n\n\n\n\nDistribution of values for education\n\n\n\n\n10 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\neducation\nEducation level\nhaven_labelled\n10\n0.99\n1\n3\n4\n2.872727\n0.9421935\n4\n▂▁▆▁▁▇▁▇\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nLess than high school\n1\n\n\nHigh school\n2\n\n\nTrade diploma/College\n3\n\n\nUniversity\n4\n\n\n\n\n\n\n\n\n\nTotal household income\n\n\n\n\n\n\n\nDistribution of values for income\n\n\n\n\n1 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nincome\nTotal household income\nhaven_labelled\n1\n0.999\n1\n4\n8\n4.56957\n2.301632\n8\n▃▆▇▆▅▅▃▇\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\n&lt;20,000\n1\n\n\n20,000 to &lt;40,000\n2\n\n\n40,000 to &lt;60,000\n3\n\n\n60,000 to &lt;80,000\n4\n\n\n80,000 to &lt;100,000\n5\n\n\n100,000 to &lt;120,000\n6\n\n\n120,000 to &lt;140,000\n7\n\n\n140,000 or more\n8\n\n\n\n\n\n\n\n\n\nMarital status\n\n\n\n\n\n\n\nDistribution of values for marital_status\n\n\n\n\n6 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nordered\nvalue_labels\nn_missing\ncomplete_rate\nn_unique\ntop_counts\n\n\n\n\nmarital_status\nMarital status\nfactor\nFALSE\n1. Married,2. Living common-law,3. Widowed/Divorced/Separated,4. Single, never married\n6\n0.994\n4\nMar: 542, Sin: 221, Liv: 122, Wid: 109\n\n\n\n\n\n\n\n\n\nSmoking status\n\n\n\n\n\n\n\nDistribution of values for smoking\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nsmoking\nSmoking status\nhaven_labelled\n0\n1\n0\n0\n2\n0.346\n0.7230538\n3\n▇▁▁▁▁▁▁▂\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nNot smoking\n0\n\n\nOccasionally\n1\n\n\nDaily\n2\n\n\n\n\n\n\n\n\n\nModerate or vigorous physical activity, hours/week\n\n\n\n\n\n\n\nDistribution of values for phys_act_mod\n\n\n\n\n2 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nphys_act_mod\nModerate or vigorous physical activity, hours/week\nnumeric\n2\n0.998\n0\n2\n14\n3.52253\n4.119379\n▇▃▁▁▁\n\n\n\n\n\n\n\n\n\nHousehold Food Security Status\n\n\n\n\n\n\n\nDistribution of values for food_security\n\n\n\n\n2 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nfood_security\nHousehold Food Security Status\nhaven_labelled\n2\n0.998\n0\n0\n2\n0.1172345\n0.409618\n3\n▇▁▁▁▁▁▁▁\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nFood secure\n0\n\n\nModerately food insecure\n1\n\n\nSeverely food insecure\n2\n\n\n\n\n\n\n\n\n\nBodyweight, kg\n\n\n\n\n\n\n\nDistribution of values for bodyweight\n\n\n\n\n284 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nbodyweight\nBodyweight, kg\nnumeric\n284\n0.716\n39\n76\n142\n79.34631\n19.45663\n▃▇▆▂▁\n\n\n\n\n\n\n\n\n\nHeight, meters\n\n\n\n\n\n\n\nDistribution of values for height\n\n\n\n\n313 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nheight\nHeight, meters\nnumeric\n313\n0.687\n1.3\n1.7\n1.9\n1.68436\n0.0996241\n▁▂▇▇▂\n\n\n\n\n\n\n\n\n\nBody mass index, kg/m2\n\n\n\n\n\n\n\nDistribution of values for bmi\n\n\n\n\n356 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nbmi\nBody mass index, kg/m2\nnumeric\n356\n0.644\n16\n27\n62\n27.54818\n6.130724\n▇▇▂▁▁\n\n\n\n\n\n\n\n\n\nSelf-rated health\n\n\n\n\n\n\n\nDistribution of values for self_rated_health\n\n\n\n\n1 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nself_rated_health\nSelf-rated health\nhaven_labelled\n1\n0.999\n0\n3\n4\n2.687688\n0.9446392\n5\n▁▂▁▆▁▇▁▅\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nPoor\n0\n\n\nFair\n1\n\n\nGood\n2\n\n\nVery good\n3\n\n\nExcellent\n4\n\n\n\n\n\n\n\n\n\nSelf-reported high blood pressure\n\n\n\n\n\n\n\nDistribution of values for self_reported_bp\n\n\n\n\n2 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nself_reported_bp\nSelf-reported high blood pressure\nhaven_labelled\n2\n0.998\n0\n0\n1\n0.1422846\n0.3495169\n2\n▇▁▁▁▁▁▁▁\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nNo\n0\n\n\nYes\n1\n\n\n\n\n\n\n\n\n\nSelf-reported diabetes\n\n\n\n\n\n\n\nDistribution of values for self_reported_db\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nself_reported_db\nSelf-reported diabetes\nhaven_labelled\n0\n1\n0\n0\n1\n0.066\n0.2484063\n2\n▇▁▁▁▁▁▁▁\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nNo\n0\n\n\nYes\n1\n\n\n\n\n\n\n\n\n\nSelf-reported heart disease\n\n\n\n\n\n\n\nDistribution of values for self_reported_chd\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nself_reported_chd\nSelf-reported heart disease\nhaven_labelled\n0\n1\n0\n0\n1\n0.034\n0.1813198\n2\n▇▁▁▁▁▁▁▁\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nNo\n0\n\n\nYes\n1\n\n\n\n\n\n\n\n\n\nSelf-reported heart cancer\n\n\n\n\n\n\n\nDistribution of values for self_reported_cancer\n\n\n\n\n1 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nself_reported_cancer\nSelf-reported heart cancer\nhaven_labelled\n1\n0.999\n0\n0\n1\n0.015015\n0.1216733\n2\n▇▁▁▁▁▁▁▁\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nNo\n0\n\n\nYes\n1\n\n\n\n\n\n\n\n\n\nSelf-reported heart osteoporosis\n\n\n\n\n\n\n\nDistribution of values for self_reported_osteo\n\n\n\n\n576 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nself_reported_osteo\nSelf-reported heart osteoporosis\nhaven_labelled\n576\n0.424\n0\n0\n1\n0.0613208\n0.2402012\n2\n▇▁▁▁▁▁▁▁\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nNo\n0\n\n\nYes\n1\n\n\n\n\n\n\n\n\n\nAmount of food, g/d\n\n\n\n\n\n\n\nDistribution of values for foodwgt\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nfoodwgt\nAmount of food, g/d\nnumeric\n0\n1\n440\n2827\n10071\n3026.658\n1268.366\n▅▇▂▁▁\n\n\n\n\n\n\n\n\n\nEnergy intake, kcal/d\n\n\n\n\n\n\n\nDistribution of values for energy\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nenergy\nEnergy intake, kcal/d\nnumeric\n0\n1\n210\n1796\n11156\n1953.233\n915.6632\n▇▂▁▁▁\n\n\n\n\n\n\n\n\n\nSodium intake, mg/d\n\n\n\n\n\n\n\nDistribution of values for sodium\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nsodium\nSodium intake, mg/d\nnumeric\n0\n1\n34\n2488\n16490\n2827.557\n1640.5\n▇▃▁▁▁\n\n\n\n\n\n\n\n\n\nFat intake, g/d\n\n\n\n\n\n\n\nDistribution of values for fat\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nfat\nFat intake, g/d\nnumeric\n0\n1\n1.3\n65\n535\n73.80561\n45.95376\n▇▂▁▁▁\n\n\n\n\n\n\n\n\n\nSaturated fat intake, g/d\n\n\n\n\n\n\n\nDistribution of values for sfa\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nsfa\nSaturated fat intake, g/d\nnumeric\n0\n1\n0.34\n20\n121\n23.66371\n15.77335\n▇▃▁▁▁\n\n\n\n\n\n\n\n\n\nMonounsaturated fat intake, g/d\n\n\n\n\n\n\n\nDistribution of values for mufa\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nmufa\nMonounsaturated fat intake, g/d\nnumeric\n0\n1\n0.43\n24\n260\n27.80837\n19.57877\n▇▁▁▁▁\n\n\n\n\n\n\n\n\n\nPolyunsaturated fat intake, g/d\n\n\n\n\n\n\n\nDistribution of values for pufa\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\npufa\nPolyunsaturated fat intake, g/d\nnumeric\n0\n1\n0.22\n13\n164\n15.71313\n11.79504\n▇▁▁▁▁\n\n\n\n\n\n\n\n\n\nCarbohydrate intake, g/d\n\n\n\n\n\n\n\nDistribution of values for cho\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\ncho\nCarbohydrate intake, g/d\nnumeric\n0\n1\n25\n211\n1249\n229.7135\n110.5205\n▇▃▁▁▁\n\n\n\n\n\n\n\n\n\nFibers intake, g/d\n\n\n\n\n\n\n\nDistribution of values for fibers\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nfibers\nFibers intake, g/d\nnumeric\n0\n1\n0.13\n16\n87\n17.7499\n10.34278\n▇▅▁▁▁\n\n\n\n\n\n\n\n\n\nProtein intake, g/d\n\n\n\n\n\n\n\nDistribution of values for protein\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nprotein\nProtein intake, g/d\nnumeric\n0\n1\n3.9\n75\n362\n83.18208\n44.02892\n▇▆▁▁▁\n\n\n\n\n\n\n\n\n\nAlcohol intake, g/d\n\n\n\n\n\n\n\nDistribution of values for roh_g\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nroh_g\nAlcohol intake, g/d\nnumeric\n0\n1\n0\n0\n372\n9.299095\n23.96846\n▇▁▁▁▁\n\n\n\n\n\n\n\n\n\nCalcium intake, mg/d\n\n\n\n\n\n\n\nDistribution of values for calcium\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\ncalcium\nCalcium intake, mg/d\nnumeric\n0\n1\n12\n695\n3316\n811.8428\n513.2926\n▇▆▂▁▁\n\n\n\n\n\n\n\n\n\nVitamin D intake, g/d\n\n\n\n\n\n\n\nDistribution of values for vit_d\n\n\n\n\n0 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nhist\n\n\n\n\nvit_d\nVitamin D intake, g/d\nnumeric\n0\n1\n0\n3.3\n50\n4.763287\n4.974068\n▇▁▁▁▁\n\n\n\n\n\n\n\n\n\nTook a supplement containing calcium\n\n\n\n\n\n\n\nDistribution of values for calcium_supp\n\n\n\n\n4 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\ncalcium_supp\nTook a supplement containing calcium\nhaven_labelled\n4\n0.996\n0\n0\n1\n0.2640562\n0.4410508\n2\n▇▁▁▁▁▁▁▃\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nNo\n0\n\n\nYes\n1\n\n\n\n\n\n\n\n\n\nTook a supplement containing vitamin D\n\n\n\n\n\n\n\nDistribution of values for vit_d_supp\n\n\n\n\n4 missing values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nname\nlabel\ndata_type\nn_missing\ncomplete_rate\nmin\nmedian\nmax\nmean\nsd\nn_value_labels\nhist\n\n\n\n\nvit_d_supp\nTook a supplement containing vitamin D\nhaven_labelled\n4\n0.996\n0\n0\n1\n0.3423695\n0.4747409\n2\n▇▁▁▁▁▁▁▅\n\n\n\n\n\n\n\n\n\n\n\nResponse choices\n\n\nname\nvalue\n\n\n\n\nNo\n0\n\n\nYes\n1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nJSON-LD metadata\n\nThe following JSON-LD can be found by search engines, if you share this codebook publicly on the web.\n{\n  \"name\": \"Demonstration data based on the CCHS 2015 - Nutrition\",\n  \"description\": \"Sample of 1,000 respondents aged 19-70 y selected proportionally to sampling weights from the CCHS 2015 - Nutrition (PUMF)\\n\\n\\n## Table of variables\\nThis table contains variable names, labels, and number of missing values.\\nSee the complete codebook for more.\\n\\n|name                 |label                                              | n_missing|\\n|:--------------------|:--------------------------------------------------|---------:|\\n|participantid        |Unique identifier                                  |         0|\\n|r24_season           |Season (24-h dietary recall)                       |         0|\\n|r24_weekend          |Weekend (24-h dietary recall)                      |         0|\\n|r24_nfoods           |Number of items reported (24-h dietary recall)     |         0|\\n|province             |Province of residence                              |         0|\\n|age                  |Age, years                                         |         0|\\n|sex                  |Sex                                                |         0|\\n|drig                 |Dietary Reference Intake age/sex group             |         0|\\n|education            |Education level                                    |        10|\\n|income               |Total household income                             |         1|\\n|marital_status       |Marital status                                     |         6|\\n|smoking              |Smoking status                                     |         0|\\n|phys_act_mod         |Moderate or vigorous physical activity, hours/week |         2|\\n|food_security        |Household Food Security Status                     |         2|\\n|bodyweight           |Bodyweight, kg                                     |       284|\\n|height               |Height, meters                                     |       313|\\n|bmi                  |Body mass index, kg/m2                             |       356|\\n|self_rated_health    |Self-rated health                                  |         1|\\n|self_reported_bp     |Self-reported high blood pressure                  |         2|\\n|self_reported_db     |Self-reported diabetes                             |         0|\\n|self_reported_chd    |Self-reported heart disease                        |         0|\\n|self_reported_cancer |Self-reported heart cancer                         |         1|\\n|self_reported_osteo  |Self-reported heart osteoporosis                   |       576|\\n|foodwgt              |Amount of food, g/d                                |         0|\\n|energy               |Energy intake, kcal/d                              |         0|\\n|sodium               |Sodium intake, mg/d                                |         0|\\n|fat                  |Fat intake, g/d                                    |         0|\\n|sfa                  |Saturated fat intake, g/d                          |         0|\\n|mufa                 |Monounsaturated fat intake, g/d                    |         0|\\n|pufa                 |Polyunsaturated fat intake, g/d                    |         0|\\n|cho                  |Carbohydrate intake, g/d                           |         0|\\n|fibers               |Fibers intake, g/d                                 |         0|\\n|protein              |Protein intake, g/d                                |         0|\\n|roh_g                |Alcohol intake, g/d                                |         0|\\n|calcium              |Calcium intake, mg/d                               |         0|\\n|vit_d                |Vitamin D intake, g/d                              |         0|\\n|calcium_supp         |Took a supplement containing calcium               |         4|\\n|vit_d_supp           |Took a supplement containing vitamin D             |         4|\\n\\n### Note\\nThis dataset was automatically described using the [codebook R package](https://rubenarslan.github.io/codebook/) (version 0.9.2).\",\n  \"citation\": \"Adapted from Statistics Canada, Canadian Community Health Survey - Nutrition: Public Use Microdata File, 2015, April 2023. This does not constitute an endorsement by Statistics Canada of this product.\",\n  \"temporalCoverage\": \"2015\",\n  \"spatialCoverage\": \"Canada\",\n  \"datePublished\": \"2018-12-21\",\n  \"url\": \"https://www150.statcan.gc.ca/n1/en/catalogue/82M0024X2018001\",\n  \"keywords\": [\"participantid\", \"r24_season\", \"r24_weekend\", \"r24_nfoods\", \"province\", \"age\", \"sex\", \"drig\", \"education\", \"income\", \"marital_status\", \"smoking\", \"phys_act_mod\", \"food_security\", \"bodyweight\", \"height\", \"bmi\", \"self_rated_health\", \"self_reported_bp\", \"self_reported_db\", \"self_reported_chd\", \"self_reported_cancer\", \"self_reported_osteo\", \"foodwgt\", \"energy\", \"sodium\", \"fat\", \"sfa\", \"mufa\", \"pufa\", \"cho\", \"fibers\", \"protein\", \"roh_g\", \"calcium\", \"vit_d\", \"calcium_supp\", \"vit_d_supp\"],\n  \"@context\": \"http://schema.org/\",\n  \"@type\": \"Dataset\",\n  \"variableMeasured\": [\n    {\n      \"name\": \"participantid\",\n      \"description\": \"Unique identifier\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"r24_season\",\n      \"description\": \"Season (24-h dietary recall)\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"r24_weekend\",\n      \"description\": \"Weekend (24-h dietary recall)\",\n      \"value\": \"0. Weekday,\\n1. Weekend\",\n      \"maxValue\": 1,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"r24_nfoods\",\n      \"description\": \"Number of items reported (24-h dietary recall)\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"province\",\n      \"description\": \"Province of residence\",\n      \"value\": \"1. Newfoundland and Labrador,\\n2. Prince Edward Island,\\n3. Nova Scotia,\\n4. New Brunswick,\\n5. Quebec,\\n6. Ontario,\\n7. Manitoba,\\n8. Saskatchewan,\\n9. Alberta,\\n10. British Columbia\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"age\",\n      \"description\": \"Age, years\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"sex\",\n      \"description\": \"Sex\",\n      \"value\": \"1. Male,\\n2. Female\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"drig\",\n      \"description\": \"Dietary Reference Intake age/sex group\",\n      \"value\": \"8. Male, 19 to 30 y,\\n9. Female, 19 to 30 y,\\n10. Male, 31 to 50 y,\\n11. Female, 31 to 50 y,\\n12. Male, 51 to 70 y,\\n13. Female, 51 to 70 y\",\n      \"maxValue\": 13,\n      \"minValue\": 8,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"education\",\n      \"description\": \"Education level\",\n      \"value\": \"1. Less than high school,\\n2. High school,\\n3. Trade diploma/College,\\n4. University\",\n      \"maxValue\": 4,\n      \"minValue\": 1,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"income\",\n      \"description\": \"Total household income\",\n      \"value\": \"1. &lt;20,000,\\n2. 20,000 to &lt;40,000,\\n3. 40,000 to &lt;60,000,\\n4. 60,000 to &lt;80,000,\\n5. 80,000 to &lt;100,000,\\n6. 100,000 to &lt;120,000,\\n7. 120,000 to &lt;140,000,\\n8. 140,000 or more\",\n      \"maxValue\": 8,\n      \"minValue\": 1,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"marital_status\",\n      \"description\": \"Marital status\",\n      \"value\": \"1. Married,\\n2. Living common-law,\\n3. Widowed/Divorced/Separated,\\n4. Single, never married\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"smoking\",\n      \"description\": \"Smoking status\",\n      \"value\": \"0. Not smoking,\\n1. Occasionally,\\n2. Daily\",\n      \"maxValue\": 2,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"phys_act_mod\",\n      \"description\": \"Moderate or vigorous physical activity, hours/week\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"food_security\",\n      \"description\": \"Household Food Security Status\",\n      \"value\": \"0. Food secure,\\n1. Moderately food insecure,\\n2. Severely food insecure\",\n      \"maxValue\": 2,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"bodyweight\",\n      \"description\": \"Bodyweight, kg\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"height\",\n      \"description\": \"Height, meters\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"bmi\",\n      \"description\": \"Body mass index, kg/m2\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"self_rated_health\",\n      \"description\": \"Self-rated health\",\n      \"value\": \"0. Poor,\\n1. Fair,\\n2. Good,\\n3. Very good,\\n4. Excellent\",\n      \"maxValue\": 4,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"self_reported_bp\",\n      \"description\": \"Self-reported high blood pressure\",\n      \"value\": \"0. No,\\n1. Yes\",\n      \"maxValue\": 1,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"self_reported_db\",\n      \"description\": \"Self-reported diabetes\",\n      \"value\": \"0. No,\\n1. Yes\",\n      \"maxValue\": 1,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"self_reported_chd\",\n      \"description\": \"Self-reported heart disease\",\n      \"value\": \"0. No,\\n1. Yes\",\n      \"maxValue\": 1,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"self_reported_cancer\",\n      \"description\": \"Self-reported heart cancer\",\n      \"value\": \"0. No,\\n1. Yes\",\n      \"maxValue\": 1,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"self_reported_osteo\",\n      \"description\": \"Self-reported heart osteoporosis\",\n      \"value\": \"0. No,\\n1. Yes\",\n      \"maxValue\": 1,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"foodwgt\",\n      \"description\": \"Amount of food, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"energy\",\n      \"description\": \"Energy intake, kcal/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"sodium\",\n      \"description\": \"Sodium intake, mg/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"fat\",\n      \"description\": \"Fat intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"sfa\",\n      \"description\": \"Saturated fat intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"mufa\",\n      \"description\": \"Monounsaturated fat intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"pufa\",\n      \"description\": \"Polyunsaturated fat intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"cho\",\n      \"description\": \"Carbohydrate intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"fibers\",\n      \"description\": \"Fibers intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"protein\",\n      \"description\": \"Protein intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"roh_g\",\n      \"description\": \"Alcohol intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"calcium\",\n      \"description\": \"Calcium intake, mg/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"vit_d\",\n      \"description\": \"Vitamin D intake, g/d\",\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"calcium_supp\",\n      \"description\": \"Took a supplement containing calcium\",\n      \"value\": \"0. No,\\n1. Yes\",\n      \"maxValue\": 1,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    },\n    {\n      \"name\": \"vit_d_supp\",\n      \"description\": \"Took a supplement containing vitamin D\",\n      \"value\": \"0. No,\\n1. Yes\",\n      \"maxValue\": 1,\n      \"minValue\": 0,\n      \"@type\": \"propertyValue\"\n    }\n  ]\n}`"
   },
   {
+    "objectID": "1.1-Marginal_effects.html#learning-objective",
+    "href": "1.1-Marginal_effects.html#learning-objective",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Learning objective",
+    "text": "Learning objective\nUsing R and/or SAS:\n\nUnderstand limitation of typical regression output;\nLearn how to estimate marginal effects for categorical/continuous variables;\nLearn how to visualize regression models;\nLearn how to estimate custom hypotheses."
+  },
+  {
     "objectID": "1.1-Marginal_effects.html#standard-regression-output",
     "href": "1.1-Marginal_effects.html#standard-regression-output",
     "title": "Marginal effects: getting insights from a model",
@@ -84,18 +133,18 @@
     "text": "Standard regression output\nRegression models summarize data, but the standard output of a regression analysis is not automatically informative.\n\nModel (estimator) \\(\\text{HorsePower}_i=\\beta_0+\\beta_X\\text{Cylinder}_i+\\epsilon_i\\)\n\n\nCode\nglm(data = mtcars, formula = hp ~ cyl)"
   },
   {
-    "objectID": "1.1-Marginal_effects.html#standard-regression-output-1",
-    "href": "1.1-Marginal_effects.html#standard-regression-output-1",
+    "objectID": "1.1-Marginal_effects.html#typical-r-output",
+    "href": "1.1-Marginal_effects.html#typical-r-output",
     "title": "Marginal effects: getting insights from a model",
-    "section": "Standard regression output",
-    "text": "Standard regression output\n\n\n\n\n\nCall:  glm(formula = hp ~ cyl, data = mtcars)\n\nCoefficients:\n(Intercept)          cyl  \n     -51.05        31.96  \n\nDegrees of Freedom: 31 Total (i.e. Null);  30 Residual\nNull Deviance:      145700 \nResidual Deviance: 44740    AIC: 328.6"
+    "section": "Typical R output",
+    "text": "Typical R output\n\n\n\n\n\nCall:  glm(formula = hp ~ cyl, data = mtcars)\n\nCoefficients:\n(Intercept)          cyl  \n     -51.05        31.96  \n\nDegrees of Freedom: 31 Total (i.e. Null);  30 Residual\nNull Deviance:      145700 \nResidual Deviance: 44740    AIC: 328.6"
   },
   {
-    "objectID": "1.1-Marginal_effects.html#standard-regression-output-2",
-    "href": "1.1-Marginal_effects.html#standard-regression-output-2",
+    "objectID": "1.1-Marginal_effects.html#typical-sas-output",
+    "href": "1.1-Marginal_effects.html#typical-sas-output",
     "title": "Marginal effects: getting insights from a model",
-    "section": "Standard regression output",
-    "text": "Standard regression output\n\n\nproc glm output from SAS.\nModel (estimator): \\(\\text{Systolic}_i=\\beta_0+\\beta_X\\text{Age}_i+\\epsilon_i\\)\n\n\nCode\nproc glm data = sashelp.heart;\nmodel Systolic = AgeAtStart ;\nrun;"
+    "section": "Typical SAS output",
+    "text": "Typical SAS output\n\n\nproc glm output from SAS.\nModel (estimator): \\(\\text{Systolic}_i=\\beta_0+\\beta_X\\text{Age}_i+\\epsilon_i\\)\n\n\nCode\nproc glm data = sashelp.heart;\nmodel Systolic = AgeAtStart ;\nrun;"
   },
   {
     "objectID": "1.1-Marginal_effects.html#definition",
@@ -133,11 +182,11 @@
     "text": "Load demonstration data\n\n\nCode\n# Loading\nload(file = here::here(\"data\",\"processed\",\"cchs2015_demonstration.rdata\")) \n\n# Select only some variables\nfinal &lt;- \n  cchs2015_demonstration |&gt;\n  dplyr::select(participantid, r24_weekend, age, sex, education,\n                smoking, phys_act_mod, self_reported_bp,\n                energy, sodium, fibers)\n\n# preview\nhead(final,3)\n\n\n# A tibble: 3 × 11\n  participantid r24_weekend   age sex    education smoking phys_act_mod\n          &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;      &lt;dbl&gt;   &lt;dbl&gt;        &lt;dbl&gt;\n1          9261           1    20 Male           2       0         4.5 \n2          1881           0    56 Male           3       0         5.25\n3         16071           1    35 Female         4       0         2.25\n# ℹ 4 more variables: self_reported_bp &lt;dbl&gt;, energy &lt;dbl&gt;, sodium &lt;dbl&gt;,\n#   fibers &lt;dbl&gt;"
   },
   {
-    "objectID": "1.1-Marginal_effects.html#example-1-eenergy-age-sex-phys.-act.",
-    "href": "1.1-Marginal_effects.html#example-1-eenergy-age-sex-phys.-act.",
+    "objectID": "1.1-Marginal_effects.html#descriptive-analysis-eenergy-age-sex-physical-activity",
+    "href": "1.1-Marginal_effects.html#descriptive-analysis-eenergy-age-sex-physical-activity",
     "title": "Marginal effects: getting insights from a model",
-    "section": "Example 1: E(energy | age, sex, phys. act.)",
-    "text": "Example 1: E(energy | age, sex, phys. act.)\nFor descriptive purpose, we wish to estimate self-reported energy intakes according to age (years), sex and moderate/vigorous physical activity (hours/week).\n\nModel: \\(\\text{Energy}_i=\\beta_0 + \\beta_1\\text{age} + \\beta_2\\text{female} + \\beta_3\\text{phys. act.} + \\epsilon_i\\)\n\n\nCode\n# Preferable to \"factorize\" before modelling \nfinal$sex &lt;-\n  factor(final$sex,\n          levels = c(\"Male\",\"Female\"),\n          labels = c(\"Male\",\"Female\"))\n\n# actual model \nlm1 &lt;- \n  glm(energy ~ age + sex + phys_act_mod,\n    family  = gaussian(link=\"identity\"),\n    data    = final)\n\n\nSAS equivalent:\n\n\nCode\nproc genmod data=final ;\nclass sex;\nmodel energy = age sex phys_act_mod  / dist=normal link=identity ;\nrun"
+    "section": "Descriptive analysis: E(energy | age, sex, physical activity)",
+    "text": "Descriptive analysis: E(energy | age, sex, physical activity)\nFor descriptive purpose, we wish to estimate self-reported energy intakes according to age (years), sex and moderate/vigorous physical activity (hours/week).\n\nModel (estimator) \\(\\text{Energy}_i=\\beta_0 + \\beta_1\\text{age} + \\beta_2\\text{female} + \\beta_3\\text{phys. act.} +\\epsilon_i\\)\n\n\nCode\n# Preferable to \"factorize\" before modelling \nfinal$sex &lt;-\n  factor(final$sex,\n          levels = c(\"Male\",\"Female\"),\n          labels = c(\"Male\",\"Female\"))\n\n# actual model \nlm1 &lt;- \n  glm(energy ~ age + sex + phys_act_mod,\n    family  = gaussian(link=\"identity\"),\n    data    = final)\n\n\nSAS equivalent:\n\n\nCode\nproc genmod data=final ;\nclass sex;\nmodel energy = age sex phys_act_mod / dist=normal link=identity ;\nrun"
   },
   {
     "objectID": "1.1-Marginal_effects.html#model-summary",
@@ -145,6 +194,20 @@
     "title": "Marginal effects: getting insights from a model",
     "section": "Model summary",
     "text": "Model summary\nWhat can we say based on this output?\n\n\n\nCall:  glm(formula = energy ~ age + sex + phys_act_mod, family = gaussian(link = \"identity\"), \n    data = final)\n\nCoefficients:\n (Intercept)           age     sexFemale  phys_act_mod  \n    2492.535        -7.477      -539.742        21.046  \n\nDegrees of Freedom: 997 Total (i.e. Null);  994 Residual\n  (2 observations deleted due to missingness)\nNull Deviance:      835200000 \nResidual Deviance: 736100000    AIC: 16330"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#exploring-parameters-overview",
+    "href": "1.1-Marginal_effects.html#exploring-parameters-overview",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Exploring parameters: overview",
+    "text": "Exploring parameters: overview\nHelpful package to assess coefficients and generate standard output:\n\nbroom::tidy(model)\nparameters::parameters(model)\ngtsummary::tbl_regression()\n\n\nSAS equivalent: ods output &lt;...&gt;; (see procedure documentation or use ods trace on;)"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#exploring-parameters-example",
+    "href": "1.1-Marginal_effects.html#exploring-parameters-example",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Exploring parameters: example",
+    "text": "Exploring parameters: example\n\n\nCode\ngtsummary::tbl_regression(lm1)\n\n\n\n\n\n\n  \n    \n    \n      Characteristic\n      Beta\n      95% CI1\n      p-value\n    \n  \n  \n    Age, years\n-7.5\n-11, -3.7\n&lt;0.001\n    sex\n\n\n\n        Male\n—\n—\n\n        Female\n-540\n-648, -431\n&lt;0.001\n    Moderate or vigorous physical activity, hours/week\n21\n7.9, 34\n0.002\n  \n  \n  \n    \n      1 CI = Confidence Interval"
   },
   {
     "objectID": "1.1-Marginal_effects.html#model-assumptions-overview",
@@ -175,263 +238,11 @@
     "text": "Revised model\nSpecify Restricted Cubic Spline (RCS) transformation with the rms package.\nrms::rcs(variable,knots)\n\n\nCode\n# revised model\nlm2 &lt;- \n  glm(energy ~ rms::rcs(age,4) + sex + rms::rcs(phys_act_mod,3),\n    family  = gaussian(link=\"identity\") ,\n    data    = final)"
   },
   {
-    "objectID": "1.1-Marginal_effects.html#exploring-parameters-overview",
-    "href": "1.1-Marginal_effects.html#exploring-parameters-overview",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Exploring parameters: overview",
-    "text": "Exploring parameters: overview\nHelpful package to assess coefficients and generate standard output:\n\nbroom::tidy(model)\nparameters::parameters(model)\ngtsummary::tbl_regression()\n\n\nSAS equivalent: ods output &lt;...&gt;; (see procedure documentation or use ods trace on;)"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#exploring-parameters-example",
-    "href": "1.1-Marginal_effects.html#exploring-parameters-example",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Exploring parameters: example",
-    "text": "Exploring parameters: example\n\n\nCode\ngtsummary::tbl_regression(lm1)\n\n\n\n\n\n\n  \n    \n    \n      Characteristic\n      Beta\n      95% CI1\n      p-value\n    \n  \n  \n    Age, years\n-7.5\n-11, -3.7\n&lt;0.001\n    sex\n\n\n\n        Male\n—\n—\n\n        Female\n-540\n-648, -431\n&lt;0.001\n    Moderate or vigorous physical activity, hours/week\n21\n7.9, 34\n0.002\n  \n  \n  \n    \n      1 CI = Confidence Interval"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-categorical-covariategroup-means",
-    "href": "1.1-Marginal_effects.html#marginal-effects-categorical-covariategroup-means",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: categorical covariate/group means",
-    "text": "Marginal effects: categorical covariate/group means\nMarginal Means/Least-square means: “Predictions of a model, averaged across a ‘reference grid’ of categorical predictors.”\n\n\nCode\nemmeans::lsmeans(lm2, \"sex\") \n\n\n sex    lsmean   SE  df lower.CL upper.CL\n Male     2157 59.7 991     2040     2274\n Female   1612 61.2 991     1492     1733\n\nConfidence level used: 0.95"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-categorical-covariategroup-mean",
-    "href": "1.1-Marginal_effects.html#marginal-effects-categorical-covariategroup-mean",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: categorical covariate/group mean",
-    "text": "Marginal effects: categorical covariate/group mean\nMore flexible analysis with marginaleffects\n\n\nCode\nmarginaleffects::marginal_means(model = lm2, variables = \"sex\")\n\n\n\n Term  Value Mean Pr(&gt;|z|) 2.5 % 97.5 %\n  sex Male   2157   &lt;0.001  2040   2274\n  sex Female 1612   &lt;0.001  1493   1732\n\nResults averaged over levels of: sex \nColumns: rowid, term, value, sex, estimate, p.value, conf.low, conf.high, age, energy, phys_act_mod, wts"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-categorical-covariategroup-mean-1",
-    "href": "1.1-Marginal_effects.html#marginal-effects-categorical-covariategroup-mean-1",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: categorical covariate/group mean",
-    "text": "Marginal effects: categorical covariate/group mean\nLeast-Square Means: LS-means are predicted population margins—that is, they estimate the marginal means over a balanced population.\nSAS equivalent: LSMEANS sex ;"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-categorical-covariategroup-mean-difference",
-    "href": "1.1-Marginal_effects.html#marginal-effects-categorical-covariategroup-mean-difference",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: categorical covariate/group mean difference",
-    "text": "Marginal effects: categorical covariate/group mean difference\n\n\nCode\nmarginaleffects::marginal_means(model = lm2, variables = \"sex\",\n                                hypothesis = \"pairwise\")\n\n\n\n          Term Mean Pr(&gt;|z|) 2.5 % 97.5 %\n Male - Female  545   &lt;0.001   436    653\n\nResults averaged over levels of: sex \nColumns: term, estimate, p.value, conf.low, conf.high \n\n\n\nSAS equivalent: LSMEANS sex / diff=all cl ;"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-model-visualization",
-    "href": "1.1-Marginal_effects.html#marginal-effects-model-visualization",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: model visualization",
-    "text": "Marginal effects: model visualization\nE(energy|age, Z)\nPlot specific parameters with marginaleffects::plot_predictions\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2,\n                                    condition =c(\"age\"),\n                                    draw=TRUE) +\n  ggplot2::theme_bw() \n\n\n\nWhat is the value of sex? phys_act_mod?\nSAS equivalent: proc plm ...;"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-model-visualization-1",
-    "href": "1.1-Marginal_effects.html#marginal-effects-model-visualization-1",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: model visualization",
-    "text": "Marginal effects: model visualization\nAlternative visualization: average of all covariate.\n\n\nCode\n# generate dummy-coded variable for sex\nfinal$female &lt;- ifelse(final$sex==\"Female\",1,0)\n\n# revised model\nlm2b &lt;-\n  glm(energy ~ rms::rcs(age,4) + female + rms::rcs(phys_act_mod,3),\n    family  = gaussian(link=\"identity\") ,\n    data    = final)\n\n\n\nSex: mean(final$female) = 0.5\nPhysical act.: mean(final$phys_act_mod,na.rm=TRUE)= 3.5\n\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2b,\n                                    condition =c(\"age\"),\n                                    draw=TRUE) +\n  ggplot2::theme_bw()"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-custom-hypotheses",
-    "href": "1.1-Marginal_effects.html#marginal-effects-custom-hypotheses",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: custom hypotheses",
-    "text": "Marginal effects: custom hypotheses\nUse marginaleffects::avg_comparisons\nSpecific values: E(energy|age=60, Z) - E(energy|age=30, Z)\n\n\nCode\n# &lt;avg_comparisons&gt; to calculate estimated Y given X and average Z\nmarginaleffects::avg_comparisons(lm2,\n                                 by=\"sex\",\n            variables = list( age = c(60, 20)))\n\n\n\n Term            Contrast    sex Estimate Std. Error     z Pr(&gt;|z|) 2.5 %\n  age mean(60) - mean(20) Male       -359       95.2 -3.77   &lt;0.001  -545\n  age mean(60) - mean(20) Female     -359       95.2 -3.77   &lt;0.001  -545\n 97.5 %\n   -172\n   -172\n\nColumns: term, contrast, sex, estimate, std.error, statistic, p.value, conf.low, conf.high, predicted, predicted_hi, predicted_lo"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#logistic-regression",
-    "href": "1.1-Marginal_effects.html#logistic-regression",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Logistic regression",
-    "text": "Logistic regression\n\n\nCode\nlogm1 &lt;-\n  glm(self_reported_bp ~ rms::rcs(sodium,5)  + rms::rcs(age,4) + factor(sex) + rms::rcs(phys_act_mod,3) + factor(education),\n    binomial(link = \"logit\"),\n    data = final )\n\ngtsummary::tbl_regression(logm1, exponentiate = TRUE)\n\n\n\n\n\n\n  \n    \n    \n      Characteristic\n      OR1\n      95% CI1\n      p-value\n    \n  \n  \n    Sodium intake, mg/d\n\n\n\n        rms::rcs(sodium, 5)sodium\n1.00\n1.00, 1.00\n0.7\n        rms::rcs(sodium, 5)sodium'\n1.00\n0.99, 1.01\n&gt;0.9\n        rms::rcs(sodium, 5)sodium''\n1.00\n0.95, 1.05\n&gt;0.9\n        rms::rcs(sodium, 5)sodium'''\n0.99\n0.94, 1.05\n0.8\n    Age, years\n\n\n\n        rms::rcs(age, 4)age\n1.27\n1.06, 1.69\n0.039\n        rms::rcs(age, 4)age'\n0.80\n0.49, 1.14\n0.3\n        rms::rcs(age, 4)age''\n1.69\n0.58, 6.45\n0.4\n    factor(sex)\n\n\n\n        Male\n—\n—\n\n        Female\n0.78\n0.51, 1.18\n0.2\n    Moderate or vigorous physical activity, hours/week\n\n\n\n        rms::rcs(phys_act_mod, 3)phys_act_mod\n1.11\n0.93, 1.34\n0.2\n        rms::rcs(phys_act_mod, 3)phys_act_mod'\n0.79\n0.50, 1.26\n0.3\n    factor(education)\n\n\n\n        1\n—\n—\n\n        2\n0.76\n0.40, 1.46\n0.4\n        3\n0.40\n0.21, 0.77\n0.006\n        4\n0.41\n0.21, 0.82\n0.011\n  \n  \n  \n    \n      1 OR = Odds Ratio, CI = Confidence Interval"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#references",
-    "href": "1.1-Marginal_effects.html#references",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "References",
-    "text": "References\n\n\nSHN Coding Club\n\n\n\nArel-Bundock, Vincent. 2023. Marginaleffects: Predictions, Comparisons, Slopes, Marginal Means, and Hypothesis Tests. https://vincentarelbundock.github.io/marginaleffects/.\n\n\nHarrell, F. E. 2015. Regression Modeling Strategies: With Applications to Linear Models, Logistic Regression, and Survival Analysis. Book. Springer International Publishing. https://books.google.ca/books?id=kfHrF-bVcvQC.\n\n\nHernan, M. A. 2010. “The Hazards of Hazard Ratios.” Journal Article. Epidemiology 21 (1): 13–15. https://doi.org/10.1097/EDE.0b013e3181c1ea43.\n\n\nHernán, M. A., and J. M. Robins. 2020. Causal Inference: What If. Book. CRC Boca Raton: Chapman & Hall/CRC. https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/.\n\n\nNorton, E. C., B. E. Dowd, and M. L. Maciejewski. 2019. “Marginal Effects-Quantifying the Effect of Changes in Risk Factors in Logistic Regression Models.” Journal Article. JAMA 321 (13): 1304–5. https://doi.org/10.1001/jama.2019.1954."
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-custom-hypotheses-1",
-    "href": "1.1-Marginal_effects.html#marginal-effects-custom-hypotheses-1",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: custom hypotheses",
-    "text": "Marginal effects: custom hypotheses\nCommon values: E(energy|age=75th, Z) - E(energy|age=25th, Z)\n\n\nCode\n# &lt;avg_comparisons&gt; to calculate estimated Y given X and average Z\nmarginaleffects::avg_comparisons(lm2,\n                                 variables = list(age = \"iqr\"))\n\n\n\n Term Contrast Estimate Std. Error     z Pr(&gt;|z|) 2.5 % 97.5 %\n  age  Q3 - Q1     -126       78.2 -1.61    0.107  -279   27.3\n\nColumns: term, contrast, estimate, std.error, statistic, p.value, conf.low, conf.high"
-  },
-  {
     "objectID": "1.1-Marginal_effects.html#exploring-parameters-example-1",
     "href": "1.1-Marginal_effects.html#exploring-parameters-example-1",
     "title": "Marginal effects: getting insights from a model",
     "section": "Exploring parameters: example",
     "text": "Exploring parameters: example\n\n\nCode\ngtsummary::tbl_regression(lm2)\n\n\n\n\n\n\n  \n    \n    \n      Characteristic\n      Beta\n      95% CI1\n      p-value\n    \n  \n  \n    Age, years\n\n\n\n        rms::rcs(age, 4)age\n-16\n-34, 1.0\n0.065\n        rms::rcs(age, 4)age'\n21\n-26, 69\n0.4\n        rms::rcs(age, 4)age''\n-65\n-234, 104\n0.5\n    sex\n\n\n\n        Male\n—\n—\n\n        Female\n-545\n-653, -436\n&lt;0.001\n    Moderate or vigorous physical activity, hours/week\n\n\n\n        rms::rcs(phys_act_mod, 3)phys_act_mod\n-13\n-61, 36\n0.6\n        rms::rcs(phys_act_mod, 3)phys_act_mod'\n90\n-34, 213\n0.2\n  \n  \n  \n    \n      1 CI = Confidence Interval\n    \n  \n\n\n\n\n… How can we interpret this revised model?"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#marginal-effects-model-visualization-2",
-    "href": "1.1-Marginal_effects.html#marginal-effects-model-visualization-2",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Marginal effects: model visualization",
-    "text": "Marginal effects: model visualization\nE(energy|age, sex, Z)\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2,\n                                    condition =c(\"age\",\"sex\"),\n                                    draw=TRUE) + \n  ggplot2::theme_bw()"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#model-visualization-at-representative-values",
-    "href": "1.1-Marginal_effects.html#model-visualization-at-representative-values",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Model visualization at representative values",
-    "text": "Model visualization at representative values\nPlot specific parameters with marginaleffects::plot_predictions\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2,\n                                    condition =c(\"age\"),\n                                    draw=TRUE)+\n  ggplot2::labs(title=\"E(energy | age, Z)\",\n                subtitle = \"Curve at representative values\") +\n  ggplot2::theme_bw()"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#model-vizualisation-at-mean-values",
-    "href": "1.1-Marginal_effects.html#model-vizualisation-at-mean-values",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Model vizualisation at mean values",
-    "text": "Model vizualisation at mean values\nAlternative visualization: mean of all covariates, including categorical ones coded as dummy covariates.\n\n\nCode\n# generate dummy-coded variable for sex\nfinal$female &lt;- ifelse(final$sex==\"Female\",1,0)\n\n# revised model\nlm2b &lt;-\n  glm(energy ~ rms::rcs(age,4) + female + rms::rcs(phys_act_mod,3),\n    family  = gaussian(link=\"identity\") ,\n    data    = final)\n\n\n\nSex: mean(final$female) = 0.5\nPhysical act.: mean(final$phys_act_mod,na.rm=TRUE)= 3.52"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#model-vizualisation-at-mean-values-1",
-    "href": "1.1-Marginal_effects.html#model-vizualisation-at-mean-values-1",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Model vizualisation at mean values",
-    "text": "Model vizualisation at mean values\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2b,\n                                    condition =c(\"age\"),\n                                    draw=TRUE) +\n  ggplot2::labs(title=\"E(energy | age, Z)\",\n                subtitle = \"Curve at mean values\") +\n  ggplot2::theme_bw()"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#model-vizualisation-for-more-than-1-covariate",
-    "href": "1.1-Marginal_effects.html#model-vizualisation-for-more-than-1-covariate",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Model vizualisation for more than 1 covariate",
-    "text": "Model vizualisation for more than 1 covariate\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2,\n                                    condition =c(\"age\",\"sex\"),\n                                    draw=TRUE) + \n  ggplot2::labs(title=\"E(energy | age, sex, Z)\") +\n  ggplot2::theme_bw()"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#custom-hypothesis-at-user-defined-values",
-    "href": "1.1-Marginal_effects.html#custom-hypothesis-at-user-defined-values",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Custom hypothesis at user-defined values",
-    "text": "Custom hypothesis at user-defined values\nUse marginaleffects::avg_comparisons\nE(energy|age=60, Z) - E(energy|age=30, Z)\n\n\nCode\n# &lt;avg_comparisons&gt; to calculate estimated Y given X and average Z\nmarginaleffects::avg_comparisons(lm2,\n                                 variables = list(age = c(30,60))\n                                 ) \n\n\n\n Term Contrast Estimate Std. Error     z Pr(&gt;|z|) 2.5 % 97.5 %\n  age  60 - 30     -200       68.9 -2.91  0.00365  -335  -65.2\n\nColumns: term, contrast, estimate, std.error, statistic, p.value, conf.low, conf.high"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#custom-hypothesis-for-common-change",
-    "href": "1.1-Marginal_effects.html#custom-hypothesis-for-common-change",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Custom hypothesis for common change",
-    "text": "Custom hypothesis for common change\nE(energy|age=75th, Z) - E(energy|age=25th, Z)\n\n\nCode\n# &lt;avg_comparisons&gt; to calculate estimated Y given X and average Z\nmarginaleffects::avg_comparisons(lm2,\n                                 variables = list(age = \"iqr\"))\n\n\n\n Term Contrast Estimate Std. Error     z Pr(&gt;|z|) 2.5 % 97.5 %\n  age  Q3 - Q1     -126       78.2 -1.61    0.107  -279   27.3\n\nColumns: term, contrast, estimate, std.error, statistic, p.value, conf.low, conf.high \n\n\nMore examples available online"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#model-visualization-at-representative-values-sas",
-    "href": "1.1-Marginal_effects.html#model-visualization-at-representative-values-sas",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Model visualization at representative values (SAS)",
-    "text": "Model visualization at representative values (SAS)\nSAS equivalent: proc plm ...;\n\n\nCode\n    proc plm restore=lm2  ;\n        effectplot fit(x= age ) / clm at(sex=\"Female\");\n    run;"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#learning-objective",
-    "href": "1.1-Marginal_effects.html#learning-objective",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Learning objective",
-    "text": "Learning objective\nUsing R and/or SAS:\n\nUnderstand limitation of typical regression output;\nLearn how to estimate marginal effects for categorical/continuous variables;\nLearn how to visualize regression models;\nLearn how to estimate custom hypotheses."
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#example-2-logistic-regression",
-    "href": "1.1-Marginal_effects.html#example-2-logistic-regression",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Example 2: Logistic regression",
-    "text": "Example 2: Logistic regression\n\n\nCode\n# recode categorical covariates\nfinal &lt;- \n  final |&gt;\n  dplyr::mutate(\n    # education: university vs. else\n    edu_4 = ifelse(education==4,1,0),\n    # smoking: daily or occasional smoker vs. else\n    smk_1 = ifelse(smoking %in% c(1,2),1,0)\n  )\n\n# confirm recoding\n  with(final,table(edu_4,education))\n\n\n     education\nedu_4   1   2   3   4\n    0  84 258 348   0\n    1   0   0   0 300\n\n\nCode\n  with(final,table(smk_1,smoking))\n\n\n     smoking\nsmk_1   0   1   2\n    0 802   0   0\n    1   0  50 148\n\n\n\n\nCode\nlogm1 &lt;-\n  glm(self_reported_bp ~ rms::rcs(sodium,3) + rms::rcs(age,3) + female + edu_4 + smk_1 + rms::rcs(phys_act_mod,3),\n    binomial(link = \"logit\"),\n    data = final )\n\nlogm1\n\n\n\nCall:  glm(formula = self_reported_bp ~ rms::rcs(sodium, 3) + rms::rcs(age, \n    3) + female + edu_4 + smk_1 + rms::rcs(phys_act_mod, 3), \n    family = binomial(link = \"logit\"), data = final)\n\nCoefficients:\n                           (Intercept)               rms::rcs(sodium, 3)sodium  \n                            -9.7611025                               0.0004064  \n            rms::rcs(sodium, 3)sodium'                     rms::rcs(age, 3)age  \n                            -0.0006629                               0.1621546  \n                  rms::rcs(age, 3)age'                                  female  \n                            -0.0635853                              -0.3261307  \n                                 edu_4                                   smk_1  \n                            -0.3632489                              -0.3183342  \n rms::rcs(phys_act_mod, 3)phys_act_mod  rms::rcs(phys_act_mod, 3)phys_act_mod'  \n                             0.0329085                              -0.0477153  \n\nDegrees of Freedom: 986 Total (i.e. Null);  977 Residual\n  (13 observations deleted due to missingness)\nNull Deviance:      798.7 \nResidual Deviance: 642.3    AIC: 662.3"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#model-visualization-at-mean-values",
-    "href": "1.1-Marginal_effects.html#model-visualization-at-mean-values",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Model visualization at mean values",
-    "text": "Model visualization at mean values\nAlternative to representative values: use mean of all covariates, including categorical ones (coded as dummy covariates).\n\n\nCode\n# generate dummy-coded variable for sex\nfinal$female &lt;- ifelse(final$sex==\"Female\",1,0)\n\n# revised model\nlm2b &lt;-\n  glm(energy ~ rms::rcs(age,4) + female + rms::rcs(phys_act_mod,3),\n    family  = gaussian(link=\"identity\") ,\n    data    = final)\n\n\n\nAge: mean(final$age)= 45.53\nSex: mean(final$female) = 0.5\nPhysical act.: mean(final$phys_act_mod) = 3.52"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#model-visualization-at-mean-values-1",
-    "href": "1.1-Marginal_effects.html#model-visualization-at-mean-values-1",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Model visualization at mean values",
-    "text": "Model visualization at mean values\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2b,\n                                    condition =c(\"age\"),\n                                    draw=TRUE) +\n  ggplot2::labs(title=\"E(energy | age, Z)\",\n                subtitle = \"Curve at mean values\") +\n  ggplot2::theme_bw()"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#model-visualization-for-more-than-1-covariate",
-    "href": "1.1-Marginal_effects.html#model-visualization-for-more-than-1-covariate",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Model visualization for more than 1 covariate",
-    "text": "Model visualization for more than 1 covariate\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2,\n                                    condition =c(\"age\",\"sex\"),\n                                    draw=TRUE) + \n  ggplot2::labs(title=\"E(energy | age, sex, Z)\") +\n  ggplot2::theme_bw()"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html",
-    "href": "1.1-Marginal_effects.html",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "",
-    "text": "Using R and/or SAS:\n\nUnderstand limitation of typical regression output;\nLearn how to estimate marginal effects for categorical/continuous variables;\nLearn how to visualize regression models;\nLearn how to estimate custom hypotheses.\n\n\n\n\nRegression models summarize data, but the standard output of a regression analysis is not automatically informative.\n\nModel: \\(\\text{HorsePower}_i=\\beta_0+\\beta_X\\text{Cylinder}_i+\\epsilon_i\\)\n\n\nCode\nglm(data = mtcars, formula = hp ~ cyl)\n\n\n\n\n\n\n\n\n\n\n\nCall:  glm(formula = hp ~ cyl, data = mtcars)\n\nCoefficients:\n(Intercept)          cyl  \n     -51.05        31.96  \n\nDegrees of Freedom: 31 Total (i.e. Null);  30 Residual\nNull Deviance:      145700 \nResidual Deviance: 44740    AIC: 328.6\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nproc glm output from SAS.\nModel: \\(\\text{Systolic}_i=\\beta_0+\\beta_X\\text{Age}_i+\\epsilon_i\\)\n\n\nCode\nproc glm data = sashelp.heart;\nmodel Systolic = AgeAtStart ;\nrun;\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMarginal effects can help interpreting regression models (Norton, Dowd, and Maciejewski 2019).\n\nInformally, a marginal effect is describing the change in outcome \\(Y\\) given \\(X\\), but according to population average of the other covariates.\nIn other words, making your model (more) interpretable\nNote that the terminology is extremely confusing\n\nMarginalia: A guide to figuring out what the heck marginal effects\n\n\n\n\n\nFor the most simple models, the marginal effect is the same as the regression coefficient\n\nThe marginal effect in \\(Y=\\beta_0+\\beta_XX+\\epsilon\\) is…\n\\(\\beta_X\\)\n\n\nFor more complex models, marginal effects are harder to obtain\n\n\\(\\text{logit}(Y)=\\beta_0+\\beta_X\\text{rcs}_X+\\beta_{X_2}*\\beta_{X_3}+\\gamma Z\\)\n\n\n\n\n\nR packages were developed to facilitate marginal effect estimation\n\nmarginaleffects\nemmeans (includes the older lsmeans)\n\n\nEquivalent SAS options:\n\nESTIMATE\nLSMEANS"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#example-2-estimated-risk-of-self-reported-hyperptension",
-    "href": "1.1-Marginal_effects.html#example-2-estimated-risk-of-self-reported-hyperptension",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Example 2: estimated risk of self-reported (hyperptension)",
-    "text": "Example 2: estimated risk of self-reported (hyperptension)\nFor causal inference purpose, we wish to estimate what would be the risk of (self-reported) hypertension, had respondents met sodium recommendations vs., instead, had respondents not changed their sodium intake.\n\nModel: \\(\\text{logit}_\\text{HT}=\\beta_0 + \\beta_1\\text{age} + \\beta_2\\text{female} + \\beta_3\\text{phys. act.} + \\epsilon_i\\)\n\n\nCode\n# Preferable to \"factorize\" before modelling \nfinal$sex &lt;-\n  factor(final$sex,\n          levels = c(\"Male\",\"Female\"),\n          labels = c(\"Male\",\"Female\"))\n\n# actual model \nlm1 &lt;- \n  glm(energy ~ age + sex + phys_act_mod,\n    family  = gaussian(link=\"identity\"),\n    data    = final)\n\n\nSAS equivalent:\n\n\nCode\nproc genmod data=final ;\nclass sex;\nmodel energy = age sex phys_act_mod  / dist=normal link=identity ;\nrun"
-  },
-  {
-    "objectID": "1.0-Regression_intro.html#multiple-logistic-regression",
-    "href": "1.0-Regression_intro.html#multiple-logistic-regression",
-    "title": "Regression workshop: introduction",
-    "section": "Multiple logistic regression",
-    "text": "Multiple logistic regression\nSimilar to multiple linear regression, the probability of a binary \\(Y\\) given \\(X\\) and \\(Z\\), \\(Pr(Y|X, Z)\\), is:\n\\[\\text{logit}(\\pi)=\\beta_0+\\beta_XX_i+\\gamma Z_i\\]\n\\[\\text{with logit}(\\pi)=log(\\frac{Y}{1-Y})\\]\n\\(Z_i\\) in the equation above could be a vector of covariates (i.e., more than one additional independent variable). \\(\\gamma\\) represents a vector of regression coefficients. \\(Z\\) is used instead of \\(X\\) to explicitly differentiate the primary variable of interest (e.g., intervention group) from the other covariates (e.g., age, sex)."
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#example-2-estimated-risk-of-self-reported-high-blood-pressure",
-    "href": "1.1-Marginal_effects.html#example-2-estimated-risk-of-self-reported-high-blood-pressure",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Example 2: estimated risk of (self-reported) high blood pressure",
-    "text": "Example 2: estimated risk of (self-reported) high blood pressure\n\n\nFor causal inference purpose, we wish to estimate what would be the risk of hypertension, had respondents met sodium recommendations vs., instead, had respondents not changed their sodium intake.\n\nEstimand: \\(Pr(Y|X=2300)-Pr(Y|X=x)\\) :::\n::: fragment ** Model (estimator):** \\(\\text{logit}(\\pi)=\\beta_0+\\beta_\\text{Na}\\text{Na}+\\gamma Z\\) :::\n::: ::: {.column width=“40%”}\n\n\n\n\n\n\n\n\n\n\n\nHypothesized relationship\n\n\n\n\n\n\n\n\n\n\n\n\n\nFor demonstration purpose: - Assume directed acylic graph (DAG) is correct - Assume temporality - No selection bias - No measurement error\n\n\n\n\nPrepare data\nCombine variables to avoid over-fitting, i.e., limiting sample size = 142 events (Harrell 2015).\n\n\nCode\n# recode categorical covariates\nfinal &lt;- \n  final |&gt;\n  dplyr::mutate(\n    # education: university vs. else\n    edu_4 = ifelse(education==4,1,0),\n    # smoking: daily or occasional smoker vs. else\n    smk_1 = ifelse(smoking %in% c(1,2),1,0)\n  )\n\n# confirm recoding\nwith(final,table(edu_4,education))\n\n\n     education\nedu_4   1   2   3   4\n    0  84 258 348   0\n    1   0   0   0 300\n\n\nCode\nwith(final,table(smk_1,smoking))\n\n\n     smoking\nsmk_1   0   1   2\n    0 802   0   0\n    1   0  50 148\n\n\n\nLogistic regression model\n\n\nCode\nlogm1 &lt;-\n  glm(self_reported_bp ~ rms::rcs(sodium,3) + rms::rcs(age,3) + female + edu_4 + smk_1 + rms::rcs(phys_act_mod,3),\n      binomial(link = \"logit\"),\n      data = final )\n\nlogm1\n\n\n\nCall:  glm(formula = self_reported_bp ~ rms::rcs(sodium, 3) + rms::rcs(age, \n    3) + female + edu_4 + smk_1 + rms::rcs(phys_act_mod, 3), \n    family = binomial(link = \"logit\"), data = final)\n\nCoefficients:\n                           (Intercept)               rms::rcs(sodium, 3)sodium  \n                            -9.7611025                               0.0004064  \n            rms::rcs(sodium, 3)sodium'                     rms::rcs(age, 3)age  \n                            -0.0006629                               0.1621546  \n                  rms::rcs(age, 3)age'                                  female  \n                            -0.0635853                              -0.3261307  \n                                 edu_4                                   smk_1  \n                            -0.3632489                              -0.3183342  \n rms::rcs(phys_act_mod, 3)phys_act_mod  rms::rcs(phys_act_mod, 3)phys_act_mod'  \n                             0.0329085                              -0.0477153  \n\nDegrees of Freedom: 986 Total (i.e. Null);  977 Residual\n  (13 observations deleted due to missingness)\nNull Deviance:      798.7 \nResidual Deviance: 642.3    AIC: 662.3\n\n\nSAS equivalent\n\n\nCode\nproc genmod data=final ;\nclass sex;\nmodel energy = age sex phys_act_mod  / dist=normal link=identity ;\nrun"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#logistic-regression-model",
-    "href": "1.1-Marginal_effects.html#logistic-regression-model",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Logistic regression model",
-    "text": "Logistic regression model\n\n\nCode\nlogm1 &lt;-\n  glm(self_reported_bp ~ rms::rcs(sodium,3) + rms::rcs(age,3) + female + \n          edu_4 + smk_1 + rms::rcs(phys_act_mod,3),\n      binomial(link = \"logit\"),\n      data = final )\n\nlogm1\n\n\n\nCall:  glm(formula = self_reported_bp ~ rms::rcs(sodium, 3) + rms::rcs(age, \n    3) + female + edu_4 + smk_1 + rms::rcs(phys_act_mod, 3), \n    family = binomial(link = \"logit\"), data = final)\n\nCoefficients:\n                           (Intercept)               rms::rcs(sodium, 3)sodium  \n                            -9.7611025                               0.0004064  \n            rms::rcs(sodium, 3)sodium'                     rms::rcs(age, 3)age  \n                            -0.0006629                               0.1621546  \n                  rms::rcs(age, 3)age'                                  female  \n                            -0.0635853                              -0.3261307  \n                                 edu_4                                   smk_1  \n                            -0.3632489                              -0.3183342  \n rms::rcs(phys_act_mod, 3)phys_act_mod  rms::rcs(phys_act_mod, 3)phys_act_mod'  \n                             0.0329085                              -0.0477153  \n\nDegrees of Freedom: 986 Total (i.e. Null);  977 Residual\n  (13 observations deleted due to missingness)\nNull Deviance:      798.7 \nResidual Deviance: 642.3    AIC: 662.3\n\n\n:::"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#example-1-eenergy-age-sex",
-    "href": "1.1-Marginal_effects.html#example-1-eenergy-age-sex",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Example 1: E(energy | age, sex)",
-    "text": "Example 1: E(energy | age, sex)\nFor descriptive purpose, we wish to estimate self-reported energy intakes according to age (years) and sex.\n\nModel (estimator) \\(\\text{Energy}_i=\\beta_0 + \\beta_1\\text{age} + \\beta_2\\text{female} + \\epsilon_i\\)\n\n\nCode\n# Preferable to \"factorize\" before modelling \nfinal$sex &lt;-\n  factor(final$sex,\n          levels = c(\"Male\",\"Female\"),\n          labels = c(\"Male\",\"Female\"))\n\n# actual model \nlm1 &lt;- \n  glm(energy ~ age + sex ,\n    family  = gaussian(link=\"identity\"),\n    data    = final)\n\n\nSAS equivalent:\n\n\nCode\nproc genmod data=final ;\nclass sex;\nmodel energy = age sex / dist=normal link=identity ;\nrun"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#hypothesized-relationship",
-    "href": "1.1-Marginal_effects.html#hypothesized-relationship",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Hypothesized relationship",
-    "text": "Hypothesized relationship\nAssume temporality and that this causal directed acyclic graph (DAG) is correct:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\(\\text{Na}\\) sodium intake (mg)\n\\(\\text{HBP}\\) High blood pressure\n\\(U\\) (unobserved) propensity towards health-seeking behaviors\n\\(Z_1\\) age, sex, university education level\n\\(Z_2\\) smoking, moderate/intense physical activity"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#prepare-data",
-    "href": "1.1-Marginal_effects.html#prepare-data",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Prepare data",
-    "text": "Prepare data\nCombine variables to avoid over-fitting, i.e., limiting sample size = 142 events (Harrell 2015).\n\n\nCode\n# recode categorical covariates\nfinal &lt;- \n  final |&gt;\n  dplyr::mutate(\n    # education: university vs. else\n    edu_4 = ifelse(education==4,1,0),\n    # smoking: daily or occasional smoker vs. else\n    smk_1 = ifelse(smoking %in% c(1,2),1,0)\n  )\n\n# confirm recoding\nwith(final,table(edu_4,education))\n\n\n     education\nedu_4   1   2   3   4\n    0  84 258 348   0\n    1   0   0   0 300\n\n\nCode\nwith(final,table(smk_1,smoking))\n\n\n     smoking\nsmk_1   0   1   2\n    0 802   0   0\n    1   0  50 148"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#example-1-eenergy-age-sex-physical-activity",
-    "href": "1.1-Marginal_effects.html#example-1-eenergy-age-sex-physical-activity",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Example 1: E(energy | age, sex, physical activity)",
-    "text": "Example 1: E(energy | age, sex, physical activity)\nFor descriptive purpose, we wish to estimate self-reported energy intakes according to age (years), sex and moderate/vigorous physical activity (hours/week).\n\nModel (estimator) \\(\\text{Energy}_i=\\beta_0 + \\beta_1\\text{age} + \\beta_2\\text{female} + \\beta_3\\text{phys. act.} +\\epsilon_i\\)\n\n\nCode\n# Preferable to \"factorize\" before modelling \nfinal$sex &lt;-\n  factor(final$sex,\n          levels = c(\"Male\",\"Female\"),\n          labels = c(\"Male\",\"Female\"))\n\n# actual model \nlm1 &lt;- \n  glm(energy ~ age + sex + phys_act_mod,\n    family  = gaussian(link=\"identity\"),\n    data    = final)\n\n\nSAS equivalent:\n\n\nCode\nproc genmod data=final ;\nclass sex;\nmodel energy = age sex phys_act_mod / dist=normal link=identity ;\nrun"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#descriptive-analysis-eenergy-age-sex-physical-activity",
-    "href": "1.1-Marginal_effects.html#descriptive-analysis-eenergy-age-sex-physical-activity",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Descriptive analysis: E(energy | age, sex, physical activity)",
-    "text": "Descriptive analysis: E(energy | age, sex, physical activity)\nFor descriptive purpose, we wish to estimate self-reported energy intakes according to age (years), sex and moderate/vigorous physical activity (hours/week).\n\nModel (estimator) \\(\\text{Energy}_i=\\beta_0 + \\beta_1\\text{age} + \\beta_2\\text{female} + \\beta_3\\text{phys. act.} +\\epsilon_i\\)\n\n\nCode\n# Preferable to \"factorize\" before modelling \nfinal$sex &lt;-\n  factor(final$sex,\n          levels = c(\"Male\",\"Female\"),\n          labels = c(\"Male\",\"Female\"))\n\n# actual model \nlm1 &lt;- \n  glm(energy ~ age + sex + phys_act_mod,\n    family  = gaussian(link=\"identity\"),\n    data    = final)\n\n\nSAS equivalent:\n\n\nCode\nproc genmod data=final ;\nclass sex;\nmodel energy = age sex phys_act_mod / dist=normal link=identity ;\nrun"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#causal-inference-estimated-risk-of-self-reported-high-blood-pressure",
-    "href": "1.1-Marginal_effects.html#causal-inference-estimated-risk-of-self-reported-high-blood-pressure",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Causal inference: estimated risk of (self-reported) high blood pressure",
-    "text": "Causal inference: estimated risk of (self-reported) high blood pressure\n\n\nFor causal inference purpose, we wish to estimate what would be the risk of hypertension, had respondents met sodium recommendations vs., instead, had respondents not changed their sodium intake.\n\nEstimand: \\(Pr(Y|X=2300)-Pr(Y|X=x)\\)\n\n\nModel (estimator): \\(\\text{logit}(\\pi)=\\beta_0+\\beta_\\text{Na}\\text{Na}+\\gamma Z\\)"
   },
   {
     "objectID": "1.1-Marginal_effects.html#categorical-covariategroup-mean-1",
@@ -462,11 +273,81 @@
     "text": "Categorical covariate/group mean difference\n\n\nCode\nmarginaleffects::marginal_means(model = lm2, variables = \"sex\",\n                                hypothesis = \"pairwise\")\n\n\n\n          Term Mean Pr(&gt;|z|) 2.5 % 97.5 %\n Male - Female  545   &lt;0.001   436    653\n\nResults averaged over levels of: sex \nColumns: term, estimate, p.value, conf.low, conf.high \n\n\n\nSAS equivalent: LSMEANS sex / diff=all cl ;"
   },
   {
-    "objectID": "1.1-Marginal_effects.html#causal-inference-estimated-risk-of-high-blood-pressure",
-    "href": "1.1-Marginal_effects.html#causal-inference-estimated-risk-of-high-blood-pressure",
+    "objectID": "1.1-Marginal_effects.html#model-visualization-at-representative-values",
+    "href": "1.1-Marginal_effects.html#model-visualization-at-representative-values",
     "title": "Marginal effects: getting insights from a model",
-    "section": "Causal inference: estimated risk of high blood pressure",
-    "text": "Causal inference: estimated risk of high blood pressure\n\n\nFor causal inference purpose, we wish to estimate what would be the risk of hypertension, had respondents met the American Hearth Association sodium recommendations vs., instead, had respondents not changed their sodium intake.\n\nEstimand: \\(Pr(Y|X=2300)-Pr(Y|X=x)\\)\n\n\nModel (estimator): \\(\\text{logit}(\\pi)=\\beta_0+\\beta_\\text{Na}\\text{Na}+\\gamma Z\\)"
+    "section": "Model visualization at representative values",
+    "text": "Model visualization at representative values\nPlot specific parameters with marginaleffects::plot_predictions\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2,\n                                    condition =c(\"age\"),\n                                    draw=TRUE)+\n  ggplot2::labs(title=\"E(energy | age, Z)\",\n                subtitle = \"Curve at representative values\") +\n  ggplot2::theme_bw()"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#model-visualization-at-representative-values-sas",
+    "href": "1.1-Marginal_effects.html#model-visualization-at-representative-values-sas",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Model visualization at representative values (SAS)",
+    "text": "Model visualization at representative values (SAS)\nSAS equivalent: proc plm ...;\n\n\nCode\n    proc plm restore=lm2  ;\n        effectplot fit(x= age ) / clm at(sex=\"Female\");\n    run;"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#model-visualization-at-mean-values",
+    "href": "1.1-Marginal_effects.html#model-visualization-at-mean-values",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Model visualization at mean values",
+    "text": "Model visualization at mean values\nAlternative to representative values: use mean of all covariates, including categorical ones (coded as dummy covariates).\n\n\nCode\n# generate dummy-coded variable for sex\nfinal$female &lt;- ifelse(final$sex==\"Female\",1,0)\n\n# revised model\nlm2b &lt;-\n  glm(energy ~ rms::rcs(age,4) + female + rms::rcs(phys_act_mod,3),\n    family  = gaussian(link=\"identity\") ,\n    data    = final)\n\n\n\nAge: mean(final$age)= 45.53\nSex: mean(final$female) = 0.5\nPhysical act.: mean(final$phys_act_mod) = 3.52"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#model-visualization-at-mean-values-1",
+    "href": "1.1-Marginal_effects.html#model-visualization-at-mean-values-1",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Model visualization at mean values",
+    "text": "Model visualization at mean values\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2b,\n                                    condition =c(\"age\"),\n                                    draw=TRUE) +\n  ggplot2::labs(title=\"E(energy | age, Z)\",\n                subtitle = \"Curve at mean values\") +\n  ggplot2::theme_bw()"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#model-visualization-for-more-than-1-covariate",
+    "href": "1.1-Marginal_effects.html#model-visualization-for-more-than-1-covariate",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Model visualization for more than 1 covariate",
+    "text": "Model visualization for more than 1 covariate\n\n\nCode\n  marginaleffects::plot_predictions(model = lm2,\n                                    condition =c(\"age\",\"sex\"),\n                                    draw=TRUE) + \n  ggplot2::labs(title=\"E(energy | age, sex, Z)\") +\n  ggplot2::theme_bw()"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#custom-hypothesis-at-user-defined-values",
+    "href": "1.1-Marginal_effects.html#custom-hypothesis-at-user-defined-values",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Custom hypothesis at user-defined values",
+    "text": "Custom hypothesis at user-defined values\nUse marginaleffects::avg_comparisons\nE(energy|age=60, Z) - E(energy|age=30, Z)\n\n\nCode\n# &lt;avg_comparisons&gt; to calculate estimated Y given X and average Z\nmarginaleffects::avg_comparisons(lm2,\n                                 variables = list(age = c(30,60))\n                                 ) \n\n\n\n Term Contrast Estimate Std. Error     z Pr(&gt;|z|) 2.5 % 97.5 %\n  age  60 - 30     -200       68.9 -2.91  0.00365  -335  -65.2\n\nColumns: term, contrast, estimate, std.error, statistic, p.value, conf.low, conf.high"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#custom-hypothesis-for-common-change",
+    "href": "1.1-Marginal_effects.html#custom-hypothesis-for-common-change",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Custom hypothesis for common change",
+    "text": "Custom hypothesis for common change\nE(energy|age=75th, Z) - E(energy|age=25th, Z)\n\n\nCode\n# &lt;avg_comparisons&gt; to calculate estimated Y given X and average Z\nmarginaleffects::avg_comparisons(lm2,\n                                 variables = list(age = \"iqr\"))\n\n\n\n Term Contrast Estimate Std. Error     z Pr(&gt;|z|) 2.5 % 97.5 %\n  age  Q3 - Q1     -126       78.2 -1.61    0.107  -279   27.3\n\nColumns: term, contrast, estimate, std.error, statistic, p.value, conf.low, conf.high \n\n\nMore examples available online"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#example-2-more-complex-model",
+    "href": "1.1-Marginal_effects.html#example-2-more-complex-model",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Example 2: more complex model",
+    "text": "Example 2: more complex model\n\n\nFor causal inference purpose, we wish to estimate the risk of hypertension across the range of sodium intakes.\n\nModel (estimator): \\(\\text{logit}(\\pi)=\\beta_0+\\beta_\\text{Na}\\text{Na}+\\gamma Z\\)"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#hypothesized-relationship",
+    "href": "1.1-Marginal_effects.html#hypothesized-relationship",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Hypothesized relationship",
+    "text": "Hypothesized relationship\nAssume temporality and that this causal directed acyclic graph (DAG) is correct:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\(\\text{Na}\\) sodium intake (mg)\n\\(\\text{HBP}\\) High blood pressure\n\\(U\\) (unobserved) propensity towards health-seeking behaviors\n\\(Z_1\\) age, sex, university education level\n\\(Z_2\\) smoking, moderate/intense physical activity"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#prepare-data",
+    "href": "1.1-Marginal_effects.html#prepare-data",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Prepare data",
+    "text": "Prepare data\nCombine variables to avoid over-fitting, i.e., limiting sample size = 142 events (Harrell 2015).\n\n\nCode\n# recode categorical covariates\nfinal &lt;- \n  final |&gt;\n  dplyr::mutate(\n    # education: university vs. else\n    edu_4 = ifelse(education==4,1,0),\n    # smoking: daily or occasional smoker vs. else\n    smk_1 = ifelse(smoking %in% c(1,2),1,0)\n  )\n\n# confirm recoding\nwith(final,table(edu_4,education))\n\n\n     education\nedu_4   1   2   3   4\n    0  84 258 348   0\n    1   0   0   0 300\n\n\nCode\nwith(final,table(smk_1,smoking))\n\n\n     smoking\nsmk_1   0   1   2\n    0 802   0   0\n    1   0  50 148"
+  },
+  {
+    "objectID": "1.1-Marginal_effects.html#logistic-regression-model",
+    "href": "1.1-Marginal_effects.html#logistic-regression-model",
+    "title": "Marginal effects: getting insights from a model",
+    "section": "Logistic regression model",
+    "text": "Logistic regression model\n\n\nCode\nlogm1 &lt;-\n  glm(self_reported_bp ~ rms::rcs(sodium,3) + rms::rcs(age,3) + female + \n          edu_4 + smk_1 + rms::rcs(phys_act_mod,3),\n      binomial(link = \"logit\"),\n      data = final )\n\nlogm1\n\n\n\nCall:  glm(formula = self_reported_bp ~ rms::rcs(sodium, 3) + rms::rcs(age, \n    3) + female + edu_4 + smk_1 + rms::rcs(phys_act_mod, 3), \n    family = binomial(link = \"logit\"), data = final)\n\nCoefficients:\n                           (Intercept)               rms::rcs(sodium, 3)sodium  \n                            -9.7611025                               0.0004064  \n            rms::rcs(sodium, 3)sodium'                     rms::rcs(age, 3)age  \n                            -0.0006629                               0.1621546  \n                  rms::rcs(age, 3)age'                                  female  \n                            -0.0635853                              -0.3261307  \n                                 edu_4                                   smk_1  \n                            -0.3632489                              -0.3183342  \n rms::rcs(phys_act_mod, 3)phys_act_mod  rms::rcs(phys_act_mod, 3)phys_act_mod'  \n                             0.0329085                              -0.0477153  \n\nDegrees of Freedom: 986 Total (i.e. Null);  977 Residual\n  (13 observations deleted due to missingness)\nNull Deviance:      798.7 \nResidual Deviance: 642.3    AIC: 662.3\n\n\n:::"
   },
   {
     "objectID": "1.1-Marginal_effects.html#model-visualization-at-mean-values-2",
@@ -474,61 +355,5 @@
     "title": "Marginal effects: getting insights from a model",
     "section": "Model visualization at mean values",
     "text": "Model visualization at mean values\n\n\nCode\nmarginaleffects::plot_predictions(model = logm1, condition =c(\"sodium\"),\n                                  draw=TRUE) +\n# Limit axis to remove extreme values \nggplot2::coord_cartesian(xlim=c(quantile(final$sodium,0.01),\n                                quantile(final$sodium,0.99))) +\n# Add labels\nggplot2::labs(title    = \"Pr(High blood pressure | sodium, Z)\",\n              subtitle = \"Curve at mean values\",\n              x = \"Sodium intake, mg\",\n              y = \"Probability of high blood pressure\") +\nggplot2::theme_bw()"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#custom-hypothesis-at-counterfactual-values-user-specified",
-    "href": "1.1-Marginal_effects.html#custom-hypothesis-at-counterfactual-values-user-specified",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Custom hypothesis at counterfactual values (user-specified)",
-    "text": "Custom hypothesis at counterfactual values (user-specified)\n\nWhat would be the risk of hypertension, had respondents met sodium recommendations vs., instead, had respondents not changed their sodium intake?\n\n\n\nCode\n# Calculate Pr(Y|X=x, Z)\np_0 &lt;- marginaleffects::predictions(logm1)\n\n# Calculate Pr(Y|X&lt;=1500, Z)\n  # i.e., new data when everyone consumed 1500 or less\nfinal_treated  &lt;-\n  final |&gt;\n  dplyr::mutate(\n    sodium = ifelse(sodium&lt;1500, sodium, 1500),\n    self_reported_bp = NA\n  )\n\np_1 &lt;- marginaleffects::predictions(logm1, newdata = final_treated)"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#wait-a-minute",
-    "href": "1.1-Marginal_effects.html#wait-a-minute",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Wait a minute…",
-    "text": "Wait a minute…\n\n\nSurvey data (cross-sectional) is not suitable for causal inference!\n\n\n\n\n\n\nFor demonstration purpose, assume:\n\ndirected acylic graph (DAG) is correct\ntemporality (prospective data);\nno confounding;\nno selection bias;\nno measurement error."
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#results",
-    "href": "1.1-Marginal_effects.html#results",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Results",
-    "text": "Results\n\n\nCode\n# Combine and calculate estimates\ntibble(\n  prob0 = mean(p_0$estimate),\n  prob1 = mean(p_1$estimate,na.rm = TRUE)\n) |&gt;\n  dplyr::mutate(\n    risk_diff  = prob1-prob0,\n    risk_ratio = prob1/prob0)\n\n\n# A tibble: 1 × 4\n  prob0 prob1 risk_diff risk_ratio\n  &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;\n1 0.135 0.125  -0.00922      0.931\n\n\n\nKeep in mind:\n\nMeasurement error (one 24-h dietary recall data)\nDifferential error (both diet AND outcome are self-reported)\nTemporality not actually satisfied (survey data)\nNo repeated dietary intake data (not a sustained intervention) …"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#typical-r-output",
-    "href": "1.1-Marginal_effects.html#typical-r-output",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Typical R output",
-    "text": "Typical R output\n\n\n\n\n\nCall:  glm(formula = hp ~ cyl, data = mtcars)\n\nCoefficients:\n(Intercept)          cyl  \n     -51.05        31.96  \n\nDegrees of Freedom: 31 Total (i.e. Null);  30 Residual\nNull Deviance:      145700 \nResidual Deviance: 44740    AIC: 328.6"
-  },
-  {
-    "objectID": "1.1-Marginal_effects.html#typical-sas-output",
-    "href": "1.1-Marginal_effects.html#typical-sas-output",
-    "title": "Marginal effects: getting insights from a model",
-    "section": "Typical SAS output",
-    "text": "Typical SAS output\n\n\nproc glm output from SAS.\nModel (estimator): \\(\\text{Systolic}_i=\\beta_0+\\beta_X\\text{Age}_i+\\epsilon_i\\)\n\n\nCode\nproc glm data = sashelp.heart;\nmodel Systolic = AgeAtStart ;\nrun;"
-  },
-  {
-    "objectID": "2.0-Missing_Data/2_multiple_imputation.html",
-    "href": "2.0-Missing_Data/2_multiple_imputation.html",
-    "title": "Part 2: Multiple Imputation",
-    "section": "",
-    "text": "setwd(\"/Users/hannah/Documents/GitHub/CodingClub_workshop/2.0-Missing_Data\")\n# install.packages(c(\"GGally\", \"mice\", \"tidyverse\", \"finalfit\"))\nlibrary(tidyverse) # for data wraggling\n\n── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──\n✔ ggplot2 3.4.0      ✔ purrr   0.3.5 \n✔ tibble  3.1.8      ✔ dplyr   1.0.10\n✔ tidyr   1.2.1      ✔ stringr 1.4.1 \n✔ readr   2.1.3      ✔ forcats 0.5.2 \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\n\nlibrary(finalfit) # great package to handle missing data\nlibrary(GGally) # for visualizing missing pattern\n\nRegistered S3 method overwritten by 'GGally':\n  method from   \n  +.gg   ggplot2\n\nlibrary(mice) # for multiple imputation\n\n\nAttaching package: 'mice'\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nThe following objects are masked from 'package:base':\n\n    cbind, rbind\n\n\n\n\n\n\n# select a subset for multiple imputation exercise\nload( here::here(\"data\", \"processed\", \"cchs2015_demonstration.rdata\"))\n  \n# select a subset of multiple imputation practice\nMD <- cchs2015_demonstration %>%\n  select(participantid, age, sex, bmi,\n         energy, protein, cho, fat)\n\n# view MD subset\nstr(MD)\n\ntibble [1,000 × 8] (S3: tbl_df/tbl/data.frame)\n $ participantid: num [1:1000] 9261 1881 16071 18893 1420 ...\n  ..- attr(*, \"label\")= chr \"Unique identifier\"\n $ age          : num [1:1000] 20 56 35 33 49 27 35 46 55 50 ...\n  ..- attr(*, \"label\")= chr \"Age, years\"\n $ sex          : Factor w/ 2 levels \"Male\",\"Female\": 1 1 2 2 2 2 1 1 2 2 ...\n  ..- attr(*, \"label\")= chr \"Sex\"\n $ bmi          : num [1:1000] NA 28.1 19.8 NA 22.5 ...\n  ..- attr(*, \"label\")= chr \"Body mass index, kg/m2\"\n $ energy       : num [1:1000] 3157 1133 1879 1382 2148 ...\n  ..- attr(*, \"label\")= chr \"Energy intake, kcal/d\"\n $ protein      : num [1:1000] 114.7 34.6 78.2 28.9 74.3 ...\n  ..- attr(*, \"label\")= chr \"Protein intake, g/d\"\n $ cho          : num [1:1000] 291 203 137 126 321 ...\n  ..- attr(*, \"label\")= chr \"Carbohydrate intake, g/d\"\n $ fat          : num [1:1000] 161.8 23.7 115.7 78 66.5 ...\n  ..- attr(*, \"label\")= chr \"Fat intake, g/d\"\n\nsummary(MD)\n\n participantid        age            sex           bmi            energy       \n Min.   :   76   Min.   :19.00   Male  :498   Min.   :16.27   Min.   :  209.5  \n 1st Qu.: 5111   1st Qu.:34.00   Female:502   1st Qu.:23.45   1st Qu.: 1348.3  \n Median :10126   Median :46.00                Median :26.66   Median : 1796.2  \n Mean   :10071   Mean   :45.53                Mean   :27.55   Mean   : 1953.2  \n 3rd Qu.:14897   3rd Qu.:57.00                3rd Qu.:30.36   3rd Qu.: 2390.3  \n Max.   :20460   Max.   :70.00                Max.   :61.83   Max.   :11155.7  \n                                              NA's   :356                      \n    protein             cho               fat         \n Min.   :  3.915   Min.   :  25.01   Min.   :  1.317  \n 1st Qu.: 54.092   1st Qu.: 152.26   1st Qu.: 43.611  \n Median : 74.793   Median : 210.71   Median : 64.878  \n Mean   : 83.182   Mean   : 229.71   Mean   : 73.806  \n 3rd Qu.:102.048   3rd Qu.: 288.48   3rd Qu.: 91.824  \n Max.   :361.825   Max.   :1249.47   Max.   :534.565  \n                                                      \n\n\n\nmissing values are represented with NA\nvariables with missing: bmi"
-  },
-  {
-    "objectID": "2.0-Missing_Data/2_multiple_imputation.html#imputation-phase",
-    "href": "2.0-Missing_Data/2_multiple_imputation.html#imputation-phase",
-    "title": "Part 2: Multiple Imputation",
-    "section": "4.1 imputation phase",
-    "text": "4.1 imputation phase\n\nDependent: energy intake\nMain predictor: fat intake\nCovariates of interest: age, sex, bmi\nAuxiliary variables: protein, cho\n\n\n# impute missing values for all variables using mice package\n# in our case, we would just need to include all variables in MD\n# number of imputation: 10\nmultiple_imputation = mice(\n  MD,\n  seed = 123,\n  m = 10,\n  print = FALSE) \n\nnote: mice has many prediction methods including Predictive Mean Matching, Chained Equations, Random Forests, etc. We are using the default Predictive Mean Matching"
-  },
-  {
-    "objectID": "2.0-Missing_Data/2_multiple_imputation.html#analysis-and-pooling-phase",
-    "href": "2.0-Missing_Data/2_multiple_imputation.html#analysis-and-pooling-phase",
-    "title": "Part 2: Multiple Imputation",
-    "section": "4.2 analysis and pooling phase",
-    "text": "4.2 analysis and pooling phase\n\nmodel_fit <-\n  with(multiple_imputation, lm(energy ~ fat + age + sex + bmi))\n\nbase::summary(mice::pool(model_fit)) %>% \n  tibble::as_tibble() |>\n   knitr::kable(\n     digits=2\n   )\n\n\n\n\nterm\nestimate\nstd.error\nstatistic\ndf\np.value\n\n\n\n\n(Intercept)\n921.66\n85.49\n10.78\n378.85\n0.00\n\n\nfat\n17.04\n0.30\n56.15\n992.79\n0.00\n\n\nage\n-2.53\n0.97\n-2.62\n983.81\n0.01\n\n\nsexFemale\n-164.88\n27.89\n-5.91\n990.49\n0.00\n\n\nbmi\n-1.01\n2.52\n-0.40\n170.54\n0.69"
   }
 ]
