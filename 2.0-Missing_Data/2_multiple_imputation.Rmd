@@ -10,7 +10,6 @@ output:
 ## Import pacakges {.smaller}
 
 ```{r}
-setwd("/Users/hannah/Documents/GitHub/CodingClub_workshop/2.0-Missing_Data")
 # install.packages(c("GGally", "mice", "tidyverse", "finalfit"))
 library(tidyverse) # for data wraggling
 library(finalfit) # great package to handle missing data
