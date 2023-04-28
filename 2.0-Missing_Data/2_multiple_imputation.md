@@ -109,26 +109,15 @@ summary(MD)
 
 Mock question of interest: is energy intake associated with with fat
 intake? 
-Dependent: energy intake - *Main predictor*: fat intake 
-Covariates of interest*: age, sex, bmi 
+Dependent: energy intake 
+Main predictor: fat intake 
+Covariates of interest: age, sex, bmi 
 Auxiliary variables*: 
 - Variables that are either correlated with missing variable (r \> 0.4) or
 believed to be associated with missingness. *Use your knowledge!
 - To increase power and/or help make the assumption of MAR more plausible
 - protein, cho
-=======
-intake?
 
-- Dependent: energy intake
-- Main predictor: fat intake
-- Covariates of interest: age, sex, bmi
-- Auxiliary variables:
-  - Variables that are either correlated with missing variable (r \>
-    0.4) or believed to be associated with missingness. *Use your
-    knowledge!*
-  - To increase power and/or help make the assumption of MAR more
-    plausible
-- protein, cho
 
 # 3. Explore pattern of missingness
 
