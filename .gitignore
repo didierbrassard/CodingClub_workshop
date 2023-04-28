@@ -53,7 +53,6 @@ rsconnect/
 #*.html
 1.0-Regression_intro_files/*
 1.1-Marginal_effects_files/*
-1.0-Regression_intro.md # added to avoid duplicating output
 
 # codebook stuff
 figure/*
@@ -63,3 +62,4 @@ data/metadata/Codebook-maker.Rmd
 
 /.quarto/
 README.qmd
+1.0-Regression_intro.md
