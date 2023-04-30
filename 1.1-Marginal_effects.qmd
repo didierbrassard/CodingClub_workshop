@@ -32,14 +32,6 @@ options(scipen = 9999)
 
 # Introduction
 
-```{r meme-stat, include=FALSE, echo=FALSE}
-#| fig-dpi: 300
-
-knitr::include_graphics(here::here("misc","meme-stat.JPG"))
-
-```
-
-
 ## Learning objective
 
 Using R and/or SAS:
@@ -672,8 +664,6 @@ store logm1;
 run;
 
 ```
-
-:::
 
 ## Model visualization at mean values {.smaller}
 
