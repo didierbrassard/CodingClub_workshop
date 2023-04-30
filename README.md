@@ -7,10 +7,9 @@ languages used for demonstration are R and SAS.
 
 # Regression workshop (2023-04-28)
 
-The [data used for this
-workshop](https://github.com/didierbrassard/CodingClub_workshop/tree/main/data)
-is a sample of 1’000 respondents aged 19-70 y from the Canadian
-Community Health Survey (CCHS) 2015 - Nutrition.
+The data used for this workshop is a sample of 1’000 respondents aged
+19-70 y from the Canadian Community Health Survey (CCHS) 2015 -
+Nutrition.
 
 > Please note that example analyses are **not** survey analysis per se,
 > i.e., they would not be appropriate for analysis of the CCHS 2015 -
@@ -22,8 +21,17 @@ Community Health Survey (CCHS) 2015 - Nutrition.
 
 - [Introduction. (very) brief refresher on regression
   analysis](https://didierbrassard.github.io/CodingClub_workshop/1.0-Regression_intro.html)
+  - The R code (Quarto) file used to produce the document is
+    [1.0-Regression_intro.qmd](1.0-Regression_intro.qmd)
 - [Interactive codebook for demonstration
   data](https://didierbrassard.github.io/CodingClub_workshop/data/metadata/Codebook-maker.html)
 - [Part 1. Marginal effects: getting insights from a
   model](https://didierbrassard.github.io/CodingClub_workshop/1.1-Marginal_effects.html#/title-slide)
 - Part 2. Multiple imputation to deal with missingness: [slides](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/MIssing_Data_slides.pptx) | [code](https://github.com/didierbrassard/CodingClub_workshop/blob/main/2.0-Missing_Data/2_multiple_imputation.md)
+  - The R code (Quarto) file used to produce slides is
+    [1.1-Marginal_effects.qmd](1.1-Marginal_effects.qmd)
+  - The SAS code to reproduce the demonstration is
+    [1.9-Supplemental_SAS_code.sas](1.9-Supplemental_SAS_code.sas)
+- Part 2. Multiple imputation to deal with missingness:
+  [slides](./2.0-Missing_Data/MIssing_Data_slides.pptx) \|
+  [code](./2.0-Missing_Data/2_multiple_imputation.md)
